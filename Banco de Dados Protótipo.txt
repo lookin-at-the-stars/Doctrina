@@ -1,0 +1,71 @@
+create database SistemaEscola;
+use SistemaEscola;
+
+CREATE TABLE Aluno (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(255) NOT NULL,
+  data_nascimento DATE NOT NULL,
+  matricula VARCHAR(255) NOT NULL UNIQUE,
+  email varchar(100) not null unique,
+  senha varchar(50) not null
+);
+
+CREATE TABLE Professor (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(255) NOT NULL,
+  data_nascimento DATE NOT NULL,
+  matricula VARCHAR(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE Curso (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(255) NOT NULL,
+  duracao INT NOT NULL
+);
+
+CREATE TABLE Turma (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(255) NOT NULL,
+  curso_id INT NOT NULL,
+  professor_id INT NOT NULL,
+  FOREIGN KEY (curso_id) REFERENCES Curso(id),
+  FOREIGN KEY (professor_id) REFERENCES Professor(id)
+);
+
+CREATE TABLE Matricula (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  aluno_id INT NOT NULL,
+  turma_id INT NOT NULL,
+  FOREIGN KEY (aluno_id) REFERENCES Aluno(id),
+  FOREIGN KEY (turma_id) REFERENCES Turma(id)
+);
+
+CREATE TABLE Disciplina (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(255) NOT NULL,
+  professor_id INT NOT NULL,
+  FOREIGN KEY (professor_id) REFERENCES Professor(id)
+);
+
+CREATE TABLE Nota (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  aluno_id INT NOT NULL,
+  disciplina_id INT NOT NULL,
+  nota FLOAT NOT NULL,
+  FOREIGN KEY (aluno_id) REFERENCES Aluno(id),
+  FOREIGN KEY (disciplina_id) REFERENCES Disciplina(id)
+);
+
+CREATE TABLE Presenca (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  aluno_id INT NOT NULL,
+  disciplina_id INT NOT NULL,
+  data DATE NOT NULL,
+  presente BOOLEAN NOT NULL,
+  FOREIGN KEY (aluno_id) REFERENCES Aluno(id),
+  FOREIGN KEY (disciplina_id) REFERENCES Disciplina(id)
+);
+SHOW TABLES;
+
+insert into Aluno(nome, email, senha) values('cachorro de headset','teste@gmail.com','123');
+select * from Aluno;
