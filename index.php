@@ -107,14 +107,15 @@
                 </a>
                 <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Login Screens:</h6>
+                        <!-- <h6 class="collapse-header">Login Screens:</h6> 
                         <a class="collapse-item" href="login.html">Login</a>
                         <a class="collapse-item" href="register.html">Register</a>
                         <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
-                        <div class="collapse-divider"></div>
-                        <h6 class="collapse-header">Other Pages:</h6>
-                        <a class="collapse-item" href="404.html">404 Page</a>
-                        <a class="collapse-item" href="blank.html">Blank Page</a>
+                        <div class="collapse-divider"></div> -->
+                        <h6 class="collapse-header">Boletins</h6>
+                        <a class="collapse-item" href="blank.php">Mensal</a>
+                        <a class="collapse-item" href="404.html">Bimestral</a>
+                        
                     </div>
                 </div>
             </li>
@@ -523,13 +524,13 @@
                     </div>
 
                     <!-- Content Row -->
-                    <div class="row">
+                    <!-- <div class="row">
 
                         <!-- Content Column -->
-                        <div class="col-lg-6 mb-4">
+                        <!-- <div class="col-lg-6 mb-4">
 
                             <!-- Project Card Example -->
-                            <div class="card shadow mb-4">
+                           <!--  <div class="card shadow mb-4">
                                 <div class="card-header py-3">
                                     <h6 class="m-0 font-weight-bold text-primary">Projects</h6>
                                 </div>
@@ -568,7 +569,7 @@
                             </div>
 
                             <!-- Color System -->
-                            <div class="row">
+                        <!--     <div class="row">
                                 <div class="col-lg-6 mb-4">
                                     <div class="card bg-primary text-white shadow">
                                         <div class="card-body">
@@ -635,12 +636,12 @@
                                 </div>
                             </div>
 
-                        </div>
+                        </div> --> 
 
-                        <div class="col-lg-6 mb-4">
+                     <!--    <div class="col-lg-6 mb-4">
 
                             <!-- Illustrations -->
-                            <div class="card shadow mb-4">
+                           <!--  <div class="card shadow mb-4">
                                 <div class="card-header py-3">
                                     <h6 class="m-0 font-weight-bold text-primary">Illustrations</h6>
                                 </div>
@@ -659,7 +660,7 @@
                             </div>
 
                             <!-- Approach -->
-                            <div class="card shadow mb-4">
+                        <!--     <div class="card shadow mb-4">
                                 <div class="card-header py-3">
                                     <h6 class="m-0 font-weight-bold text-primary">Development Approach</h6>
                                 </div>
@@ -685,7 +686,7 @@
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Your Website 2021</span>
+                        <span>Copyright &copy; Doctrina 2023</span>
                     </div>
                 </div>
             </footer>

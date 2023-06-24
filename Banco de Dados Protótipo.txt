@@ -1,13 +1,15 @@
-create database SistemaEscola;
-use SistemaEscola;
+CREATE DATABASE SistemaEscola;
+USE SistemaEscola;
 
 CREATE TABLE Aluno (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nome VARCHAR(255) NOT NULL,
   data_nascimento DATE NOT NULL,
   matricula VARCHAR(255) NOT NULL UNIQUE,
-  email varchar(100) not null unique,
-  senha varchar(50) not null
+  email VARCHAR(100) NOT NULL UNIQUE,
+  senha VARCHAR(50) NOT NULL,
+  turma_id INT,
+  FOREIGN KEY (turma_id) REFERENCES Turma(id)
 );
 
 CREATE TABLE Professor (
@@ -27,9 +29,7 @@ CREATE TABLE Turma (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nome VARCHAR(255) NOT NULL,
   curso_id INT NOT NULL,
-  professor_id INT NOT NULL,
-  FOREIGN KEY (curso_id) REFERENCES Curso(id),
-  FOREIGN KEY (professor_id) REFERENCES Professor(id)
+  FOREIGN KEY (curso_id) REFERENCES Curso(id)
 );
 
 CREATE TABLE Matricula (
@@ -43,7 +43,9 @@ CREATE TABLE Matricula (
 CREATE TABLE Disciplina (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nome VARCHAR(255) NOT NULL,
+  turma_id INT NOT NULL,
   professor_id INT NOT NULL,
+  FOREIGN KEY (turma_id) REFERENCES Turma(id),
   FOREIGN KEY (professor_id) REFERENCES Professor(id)
 );
 
@@ -65,7 +67,31 @@ CREATE TABLE Presenca (
   FOREIGN KEY (aluno_id) REFERENCES Aluno(id),
   FOREIGN KEY (disciplina_id) REFERENCES Disciplina(id)
 );
-SHOW TABLES;
 
-insert into Aluno(nome, email, senha) values('cachorro de headset','teste@gmail.com','123');
-select * from Aluno;
+INSERT INTO Aluno (nome, email, senha) VALUES ('cachorro de headset', 'teste@gmail.com', '123');
+SELECT * FROM Aluno;
+
+INSERT INTO Curso (nome, duracao) VALUES ('Curso de Programação', 6);
+SELECT * FROM Curso;
+
+INSERT INTO Curso (nome, duracao) VALUES ('Curso de Programação 2', 7);
+SELECT * FROM Curso;
+
+INSERT INTO Turma (nome, curso_id) VALUES ('Turma A', 1);
+INSERT INTO Turma (nome, curso_id) VALUES ('Turma B', 2);
+SELECT * FROM Turma;
+
+INSERT INTO Professor (nome, data_nascimento, matricula) VALUES ('ivanelson', '2000-01-01', '12');
+SELECT * FROM Professor;
+
+INSERT INTO Disciplina (nome, turma_id, professor_id) VALUES ('JavaScript', 1, 1);
+SELECT * FROM Disciplina;
+
+INSERT INTO Disciplina (nome, turma_id, professor_id) VALUES ('PhP', 2, 1);
+SELECT * FROM Disciplina;
+
+INSERT INTO Matricula (aluno_id, turma_id) VALUES (1, 1);
+SELECT * FROM Matricula;
+
+INSERT INTO Nota (aluno_id, disciplina_id, nota) VALUES (1, 1, 5.2);
+SELECT * FROM Nota;
