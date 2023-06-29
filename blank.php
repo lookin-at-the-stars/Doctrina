@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
+    <link rel="icon" type="image/png" href="/Doctrina/icone.png">
 
     <title>Doctrina- Inicio</title>
 
@@ -439,7 +440,7 @@ echo "</table>";
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Your Website 2020</span>
+                        <span>Copyright &copy; Doctrina 2023</span>
                     </div>
                 </div>
             </footer>
