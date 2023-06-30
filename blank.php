@@ -42,11 +42,13 @@
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.php">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-graduation-cap"></i>
-                </div>
-                
-                <div class="sidebar-brand-text mx-3" style="font-size: 24px;">Doctrina</div>
+            <!--<div class="sidebar-brand-icon rotate-n-15">
+            <i class="fas fa-graduation-cap"></i>-->
+        
+    
+            <div class="sidebar-brand-icon"><img src="/Doctrina/icone-branco.png" alt="" style="height: 2.0rem; width: 2.0rem;"></div>
+            <div class="sidebar-brand-text mx-0.75"><img src="/Doctrina/img/octrina-branco.png" alt="" style="height: 1.58rem; width: 6.6rem;"></div>
+            <!--<div class="sidebar-brand-text mx-3" style="font-size: 24px;">Doctrina</div>-->
             </a>
 
             <!-- Divider -->

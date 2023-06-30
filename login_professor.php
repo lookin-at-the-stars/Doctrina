@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['nome'] = $row['nome'];
                 $_SESSION['email'] = $row['Email'];
                 // Redireciona para a página de perfil
-                header('Location: index.php');
+                header('Location: index-professor.php');
                 exit;
                 ?>
                 
@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <br>
                                     
                                     </div>
-                                    <div style="align-items: flex-end;""> <i class="fas fa-graduation-cap" style="font-size: 3rem; color: #660114; padding-left:83%;"></i></div>
+                                    <div style="align-items: flex-end;""> <i class="fas fa-graduation-cap" style="font-size: 3rem; color: #660114; padding-left:83%; padding-top: 2rem;"></i></div>
                                 </div>
                             </div>
                         </div>
