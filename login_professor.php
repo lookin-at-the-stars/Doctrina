@@ -131,7 +131,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <br>
                                     
                                     </div>
-                                    <div style="align-items: flex-end;""> <i class="fas fa-graduation-cap" style="font-size: 3rem; color: #660114; padding-left:83%; padding-top: 2rem;"></i></div>
+                                    <div style="align-items: flex-end;""> <i class="fas fa-graduation-cap" 
+                                    style="font-size: 3rem; color: #660114; padding-left:83%;
+                                     padding-top: 2rem;"></i></div>
                                 </div>
                             </div>
                         </div>

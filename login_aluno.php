@@ -125,10 +125,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <a class="small" href="register.html">Create an Account!</a>
                                     <br>
                                     <br>
-                                    <br>
-                                    <br>
+                                    
                                     </div>
-                                
+                                    <div style="align-items: flex-end;""> <i class="fas fa-user" 
+                                    style="font-size: 3rem; color: #13855c; padding-left:83%;
+                                     padding-top: 2rem;"></i></div>
                                 </div>
                             </div>
                         </div>
