@@ -3,7 +3,7 @@ class DBConnection {
   private $host = "localhost";
   private $username = "root";
   private $password = "";
-  private $database = "SistemaEscola";
+  private $database = "Doctrina";
   private $conn;
   
   public function __construct() {
