@@ -10,7 +10,7 @@
     <meta name="author" content="">
     <link rel="icon" type="image/png" href="/Doctrina/icones.png">
 
-    <title>Doctrina- Inicio</title>
+    <title>Doctrina- Professor</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -57,12 +57,12 @@
             <hr class="sidebar-divider">
 
             <!-- Heading -->
-            <div class="sidebar-heading">
+         <!--   <div class="sidebar-heading"> 
                 Financeiro
-            </div>
+            </div> -->
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
+           <!-- <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-fw fa-dollar-sign"></i>
@@ -78,7 +78,7 @@
             </li>
 
             <!-- Nav Item - Utilities Collapse Menu -->
-            <li class="nav-item">
+        <!--    <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
                     aria-expanded="true" aria-controls="collapseUtilities">
                     <i class="fas fa-fw fa-pencil-ruler"></i>
@@ -95,7 +95,7 @@
             </li>
 
             <!-- Divider -->
-            <hr class="sidebar-divider">
+        <!--    <hr class="sidebar-divider">
 
             <!-- Heading -->
             <div class="sidebar-heading">
@@ -117,8 +117,8 @@
                         <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
                         <div class="collapse-divider"></div> -->
                         <h6 class="collapse-header">Boletins</h6>
-                        <a class="collapse-item" href="blank.php">Mensal</a>
-                        <a class="collapse-item" href="404.html">Bimestral</a>
+                        <a class="collapse-item" href="blank.php">Inserir notas mensais</a>
+                        <a class="collapse-item" href="404.html">Inserir notas bimestral</a>
                         
                     </div>
                 </div>
@@ -136,6 +136,13 @@
                 <a class="nav-link" href="carteirinha.html">
                     <i class="fas fa-fw fa-address-card"></i>
                     <span>Carteirinha</span></a>
+            </li>
+
+            <!-- Nav Item - Registro de Aula -->
+            <li class="nav-item">
+                <a class="nav-link" href="chamada.php">
+                    <i class="fas fa-fw fa-chalkboard-teacher"></i>
+                    <span>Registro de Aula</span></a>
             </li>
 
             <!-- Divider -->
@@ -368,9 +375,9 @@
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800" style="font-weight: bolder;">Início</h1>
-                        <a href="#" class=" btn" style="background-color: #82031b; color: #ffecc7; font-weight: bold;"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Imprimir Boletim</a>
+                        <h1 class="h3 mb-0 text-gray-800" style="font-weight: bolder;">Início - Professor</h1>
+                    <!--   <a href="#" class=" btn" style="background-color: #82031b; color: #ffecc7; font-weight: bold;"><i
+                             <class="fas fa-download fa-sm text-white-50"></i> Imprimir Boletim</a> -->
                     </div>
 
                     <!-- Content Row -->
