@@ -1,5 +1,5 @@
-CREATE DATABASE SistemaEscola;
-USE SistemaEscola;
+CREATE DATABASE Doctrina;
+USE Doctrina;
 
 CREATE TABLE Aluno (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -16,7 +16,8 @@ CREATE TABLE Professor (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nome VARCHAR(255) NOT NULL,
   data_nascimento DATE NOT NULL,
-  matricula VARCHAR(255) NOT NULL UNIQUE
+  email VARCHAR(50),
+  senha VARCHAR(20)
 );
 
 CREATE TABLE Curso (
@@ -31,8 +32,6 @@ CREATE TABLE Turma (
   curso_id INT NOT NULL,
   FOREIGN KEY (curso_id) REFERENCES Curso(id)
 );
-
-CREATE TABLE Matricula (
   id INT AUTO_INCREMENT PRIMARY KEY,
   aluno_id INT NOT NULL,
   turma_id INT NOT NULL,
@@ -68,30 +67,57 @@ CREATE TABLE Presenca (
   FOREIGN KEY (disciplina_id) REFERENCES Disciplina(id)
 );
 
-INSERT INTO Aluno (nome, email, senha) VALUES ('cachorro de headset', 'teste@gmail.com', '123');
-SELECT * FROM Aluno;
+-- Inserção de exemplo na tabela Aluno
+INSERT INTO Aluno (nome, data_nascimento, email, senha, turma_id)
+VALUES ('Gato de Headset', '2000-01-01', 'testes@gmail.com', '123', 1);
+INSERT INTO Aluno (nome, data_nascimento, email, senha, turma_id, matricula)
+VALUES ('Cachorro de Headset', '2000-01-01', 'teste@gmail.com', '123', 1, 2);
+Select * from Aluno;
 
-INSERT INTO Curso (nome, duracao) VALUES ('Curso de Programa��o', 6);
-SELECT * FROM Curso;
+-- Inserção de exemplo na tabela Professor
+INSERT INTO Professor (nome, data_nascimento)
+VALUES ('Ivanelson', '2000-01-01');
 
-INSERT INTO Curso (nome, duracao) VALUES ('Curso de Programa��o 2', 7);
-SELECT * FROM Curso;
+-- Inserção de exemplo na tabela Curso
+INSERT INTO Curso (nome, duracao)
+VALUES ('Curso de Programação', 6);
 
-INSERT INTO Turma (nome, curso_id) VALUES ('Turma A', 1);
-INSERT INTO Turma (nome, curso_id) VALUES ('Turma B', 2);
-SELECT * FROM Turma;
+-- Inserção de exemplo na tabela Turma
+INSERT INTO Turma (nome, curso_id)
+VALUES ('Turma A', 1);
+INSERT INTO Turma (nome, curso_id)
+VALUES ('Turma B', 1);
 
-INSERT INTO Professor (nome, data_nascimento, matricula) VALUES ('ivanelson', '2000-01-01', '12');
-SELECT * FROM Professor;
+-- Inserção de exemplo na tabela Matricula
+INSERT INTO Matricula (aluno_id, turma_id)
+VALUES (1, 1);
+INSERT INTO Matricula (aluno_id, turma_id)
+VALUES (1, 2);
 
-INSERT INTO Disciplina (nome, turma_id, professor_id) VALUES ('JavaScript', 1, 1);
-SELECT * FROM Disciplina;
+-- Inserção de exemplo na tabela Disciplina
+INSERT INTO Disciplina (nome, turma_id, professor_id)
+VALUES ('JavaScript', 1, 1);
+INSERT INTO Disciplina (nome, turma_id, professor_id)
+VALUES ('PHP', 2, 1);
+select * from disciplina;
+-- Inserção de exemplo na tabela Nota
+INSERT INTO Nota (aluno_id, disciplina_id, nota)
+VALUES (2, 1, 5.2);
 
-INSERT INTO Disciplina (nome, turma_id, professor_id) VALUES ('PhP', 2, 1);
-SELECT * FROM Disciplina;
+-- Inserção de exemplo na tabela Presenca
+INSERT INTO Presenca (aluno_id, disciplina_id, data, presente)
+VALUES (2, 1, '2022-01-01', 1);
 
-INSERT INTO Matricula (aluno_id, turma_id) VALUES (1, 1);
-SELECT * FROM Matricula;
+select * from professor;
+update professor set email="aio@gmail.com", senha="321" where id=1; 
 
-INSERT INTO Nota (aluno_id, disciplina_id, nota) VALUES (1, 1, 5.2);
-SELECT * FROM Nota;
+CREATE TABLE Secretaria (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(255) NOT NULL,
+  data_nascimento DATE NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  senha VARCHAR(50) NOT NULL
+);
+
+
+
