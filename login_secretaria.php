@@ -46,7 +46,7 @@
                             <div class="col-lg-6">
                                 <div class="p-4">
                                     <div class="text-center" >
-                                        <h1 class="h4 mb-4" style="font-weight: 800; color: #660315;">Login do Professor: </h1>
+                                        <h1 class="h4 mb-4" style="font-weight: 800; color: #660315;">Login do Secretaria: </h1>
                                     </div>
 
 
@@ -63,7 +63,7 @@
                                         </div>
                                         <div class="form-group">
                                         </div>
-                                        <input type="submit" value="Entrar" class="btn btn-google btn-user btn-block ">
+                                        <input type="submit" value="Entrar" class="btn btn-primary btn-user btn-block ">
                                             <hr>
                                     </form>
                                     </div>
@@ -75,49 +75,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $senha = $_POST['senha'];
 
     // Conexão com o banco de dados
-    $conn = new mysqli("localhost", "root", "", "Doctrina");
+    include "conexao.php";
 
-    if ($conn->connect_error) {
-        die("Erro de conexão: " . $conn->connect_error);
-    }
-
-    // Consulta de seleção de usuário com base no email
-    $sql = "SELECT id, nome, email, senha FROM Professor WHERE Email = '$email';";
+    // Consulta de seleção de secretaria com base no email
+    $sql = "SELECT id, nome, email, senha FROM Secretaria WHERE email = '$email';";
     $result = $conn->query($sql);
 
     if (!$result) {
         die("Erro na consulta: " . $conn->error);
     }
-        if ($result->num_rows > 0) 
-        {
-            // Verifica se a senha está correta
-            $row = $result->fetch_assoc();
-            echo $row['senha'], $senha;
-            if ($senha == $row['senha']) {
-                // Inicia a sessão e armazena os dados do usuário
-                session_start();
-                $_SESSION['id'] = $row['id'];
-                $_SESSION['nome'] = $row['nome'];
-                $_SESSION['email'] = $row['Email'];
-                // Redireciona para a página de perfil
-                header('Location: index-professor.php');
-                exit;
-                ?>
-                
-
-                                    <div class="text-center" >
-                                    <?php
-                                    } 
-                                    else {
-                                    // Senha incorreta
-                                    echo "Senha incorreta";
-                                    }   
-                                }   
-                                    else   {
-                                    // Usuário não encontrado
-                                    echo "Usuário não encontrado";
-                                    }
-                                }
+    if ($result->num_rows > 0) {
+        // Verifica se a senha está correta
+        $row = $result->fetch_assoc();
+        if ($senha == $row['senha']) {
+            // Inicia a sessão e armazena os dados da secretaria
+            session_start();
+            $_SESSION['id'] = $row['id'];
+            $_SESSION['nome'] = $row['nome'];
+            $_SESSION['email'] = $row['email'];
+            // Redireciona para a página de perfil
+            header('Location: index-secretaria.php');
+            exit;
+        } else {
+            // Senha incorreta
+            echo "Senha incorreta";
+        }
+    } else {
+        // Secretaria não encontrada
+        echo "Usuário não encontrada";
+    }
+}
 
                                 ?></p>
                                 </div>
@@ -132,9 +119,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <br>
                                     
                                     </div>
-                                    <div style="align-items: flex-end;""> <i class="fas fa-graduation-cap" 
-                                    style="font-size: 3rem; color: #660114; padding-left:83%;
-                                     padding-top: 2rem;"></i></div>
+                                    <div style="align-items: flex-end;""> <i class="fas fa-clipboard" 
+                                    style="font-size: 3rem; color: #4e73df; padding-left:87%;
+                                     padding-top: 0.2rem;"></i></div>
                                 </div>
                             </div>
                         </div>

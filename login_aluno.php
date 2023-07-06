@@ -66,6 +66,7 @@
                                             <hr>
                                     </form>
                                     </div>
+                                    <p class="small" style="text-align: center;">
                                     <?php
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -115,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 }
 
-?>
+?></p>
 </div>
                                         
                                     <div class="text-center">
