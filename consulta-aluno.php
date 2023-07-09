@@ -372,18 +372,33 @@
                         <a href="#" class=" btn" style="background-color: #82031b; color: #ffecc7; font-weight: bold;"><i
                                 class="fas fa-download fa-sm text-white-50"></i> Imprimir Boletim</a>
                     </div>
-
+<?php
+            $id = '';
+            $nome =  '';
+            $data_nascimento = '';
+            $matricula = '';
+            $email = '';
+            $senha = '';
+            $turma = '';
+    
+            // Conexão com o banco de dados
+            $conn = new mysqli("localhost", "root", "", "Doctrina");
+    
+            if ($conn->connect_error) {
+                die("Erro de conexão: " . $conn->connect_error);
+            }
+?>
                     <!-- Content Row -->
                     <div class="row">
-    <form action="" method="$_POST">
+    <form action="" method="post">
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <input type="number" name="id" class="form-control" placeholder="ID"> 
-            <input type="text" name="nome" class="form-control" placeholder="Nome">
-            <input type="date" name="data_nasc" class="form-control" placeholder="Data de Nasc.">
-            <input type="text" name="matricula" class="form-control" placeholder="Matricula">
-            <input type="email" name="email" class="form-control" placeholder="Email">
-            <input type="text" name="senha" class="form-control" placeholder="Senha">
-            <input type="text" name="turma" class="form-control" placeholder="Turma">
+            <input type="number" name="id" class="form-control" placeholder="ID" value="<?php echo $id; ?>">
+            <input type="text" name="nome" class="form-control" placeholder="Nome" value="<?php echo $nome; ?>">
+            <input type="text" name="data_nasc" class="form-control" placeholder="Data de Nascimento" value="<?php echo $data_nascimento; ?>">
+            <input type="text" name="matricula" class="form-control" placeholder="Matricula" value="<?php echo $matricula; ?>">
+            <input type="email" name="email" class="form-control" placeholder="Email" value="<?php echo $email; ?>">
+            <input type="text" name="senha" class="form-control" placeholder="Senha" value="<?php echo $senha; ?>">
+            <input type="text" name="turma" class="form-control" placeholder="Turma" value="<?php echo $turma; ?>">
         </div>
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <input type="submit" value="Adicionar" name="adicionar" class="btn" style="background-color: #82031b; border-color:#680215; color:#ffecc7">
@@ -392,75 +407,121 @@
             <input type="submit" value="consultar" name="consultar" class="btn" style="background-color: #82031b; border-color:#680215; color:#ffecc7">
         </div>
     </form>
-    <div class="card-body">
+</div>
+
+<div class="row">
     <?php
+
     // Verifica se o botão "Consultar" foi clicado
     if(isset($_POST['consultar'])) {
         // Recupera os valores dos inputs
-        $id = $_POST['id'];
-        $nome = $_POST['nome'];
-        $data_nasc = $_POST['data_nasc'];
-        $matricula = $_POST['matricula'];
-        $email = $_POST['email'];
-        $senha = $_POST['senha'];
-        $turma = $_POST['turma'];
-
-        // Conexão com o banco de dados
-        $conn = new mysqli("localhost", "root", "", "Doctrina");
-
-        if ($conn->connect_error) {
-            die("Erro de conexão: " . $conn->connect_error);
-        }
+        $id = $_POST['id'] ?? '';
+        $nome = $_POST['nome'] ?? '';
+        $data_nascimento = $_POST['data_nasc'] ?? '';
+        $matricula = $_POST['matricula'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $senha = $_POST['senha'] ?? '';
+        $turma = $_POST['turma'] ?? '';
 
         // Constrói a consulta SQL com base nos parâmetros fornecidos
-        $sql = "SELECT * FROM Aluno WHERE 1=1"; // Substitua "Aluno" pelo nome correto da tabela a ser consultada
+        $sql = "SELECT Aluno.id, Aluno.nome, Aluno.data_nascimento, Aluno.matricula, Aluno.email, Aluno.senha, Aluno.turma_id
+        FROM Aluno
+        LEFT JOIN Turma ON Aluno.turma_id = Turma.id
+        WHERE 1=1";
+
 
         if (!empty($id)) {
-            $sql .= " AND id = $id";
+            $sql .= " AND Aluno.id = $id";
         }
         if (!empty($nome)) {
-            $sql .= " AND nome = '$nome'";
+            $sql .= " AND Aluno.nome = '$nome'";
         }
-        // Adicione mais condições conforme necessário para os outros campos
-
-        // Executa a consulta no banco de dados
-        $result = $conn->query($sql);
-
-        // Verifica se a consulta retornou resultados
-        if ($result->num_rows > 0) {
-            // Exibe os resultados em uma tabela
-            echo "<div class='table-responsive'>";
-            echo "<table class='table table-bordered' id='dataTable' width='100%' cellspacing='0'>";
-            echo "<thead><tr><th>ID</th><th>Nome</th><th>Data de Nascimento</th><th>Matricula</th><th>Email</th><th>Senha</th><th>Turma</th></tr></thead>";
-            echo "<tbody>";
-
-            while ($row = $result->fetch_assoc()) {
-                echo "<tr>";
-                echo "<td>".$row["id"]."</td>";
-                echo "<td>".$row["nome"]."</td>";
-                echo "<td>".$row["data_nasc"]."</td>";
-                echo "<td>".$row["matricula"]."</td>";
-                echo "<td>".$row["email"]."</td>";
-                echo "<td>".$row["senha"]."</td>";
-                echo "<td>".$row["turma"]."</td>";
-                echo "</tr>";
+        if (!empty($data_nascimento)) {
+            $sql .= " AND Aluno.data_nascimento = '$data_nascimento'";
+        }
+        if (!empty($matricula)) {
+            $sql .= " AND Aluno.matricula = '$matricula'";
+        }
+        if (!empty($email)) {
+            $sql .= " AND Aluno.email = '$email'";
+        }
+        if (!empty($senha)) {
+            $sql .= " AND Aluno.senha = '$senha'";
+        }        
+        if (!empty($turma)) {
+            $sql_turma = "SELECT id FROM Turma WHERE nome = '$turma'";
+            $result_turma = $conn->query($sql_turma);
+            if ($result_turma && $result_turma->num_rows > 0) {
+                $row_turma = $result_turma->fetch_assoc();
+                $id_turma = $row_turma['id'];
+                $sql .= " AND Aluno.turma_id = $id_turma";
+            } else {
+                echo "Nenhum resultado encontrado.";
+                exit;
             }
-
-            echo "</tbody>";
-            echo "</table>";
-            echo "</div>";
-        } else {
-            echo "Nenhum resultado encontrado.";
         }
+        
+           
+        // Executa a consulta no banco de dados
+        $result = $conn->query($sql);               
+        // Verifica se houve algum erro na consulta
+        if ($result === false) {
+            echo "Erro na consulta: " . $conn->error;
+        } else {
+            // Verifica se a consulta retornou resultados
+            if ($result->num_rows > 0) {
+                // Exibe os resultados em uma tabela
+                echo "<div class='table-responsive'>";
+                echo "<table class='table table-bordered' id='dataTable' width='100%' cellspacing='0'>";
+                echo "<thead><tr><th>ID</th><th>Nome</th><th>Data de Nascimento</th><th>Matricula</th><th>Email</th><th>Senha</th><th>Turma</th></tr></thead>";
+                echo "<tbody>";
+        
+                while ($row = $result->fetch_assoc()) {
+                    echo "<tr>";
+                    echo "<td>".$row["id"]."</td>";
+                    echo "<td>".$row["nome"]."</td>";
+                    $data_nascimento = date("d-m-Y", strtotime($row["data_nascimento"]));
+                    echo "<td>".$data_nascimento."</td>";
+                    echo "<td>".$row["matricula"]."</td>";
+                    echo "<td>".$row["email"]."</td>";
+                    echo "<td>".$row["senha"]."</td>";
+                   // Verifica se há uma turma associada ao aluno
+                   if (!empty($row["turma_id"])) {
+                         $turma_id = $row["turma_id"];
+                        
+                        // Consulta o nome da turma com base no turma_id
+                         $sql_turma = "SELECT nome FROM Turma WHERE id = $turma_id";
+                         $result_turma = $conn->query($sql_turma);
+                        
+                         if ($result_turma && $result_turma->num_rows > 0) {
+                            $turma_row = $result_turma->fetch_assoc();
+                             $turma_nome = $turma_row["nome"];
+                             echo "<td>".$turma_nome."</td>";
+                         } else {
+                            echo "<td>Turma não encontrada</td>";
+                         }
+                     } else {
+                         echo "<td>Não atribuído</td>";
+                     }
+                    echo "</tr>";
+                }
+                
 
+                echo "</tbody>";
+                echo "</table>";
+                echo "</div>";
+            } else {
+                echo "Nenhum resultado encontrado.";
+            }
+        }
         // Fecha a conexão com o banco de dados
         $conn->close();
+        
 
-        return false;
     }
     ?>
 </div>
-</div>
+
 
 <div class="row">
 </div>
