@@ -394,7 +394,7 @@
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <input type="number" name="id" class="form-control" placeholder="ID" value="<?php echo $id; ?>">
             <input type="text" name="nome" class="form-control" placeholder="Nome" value="<?php echo $nome; ?>">
-            <input type="text" name="data_nasc" class="form-control" placeholder="Data de Nascimento" value="<?php echo $data_nascimento; ?>">
+            <input type="date" name="data_nasc" class="form-control" placeholder="Data de Nascimento" value="<?php echo $data_nascimento; ?>">
             <input type="text" name="matricula" class="form-control" placeholder="Matricula" value="<?php echo $matricula; ?>">
             <input type="email" name="email" class="form-control" placeholder="Email" value="<?php echo $email; ?>">
             <input type="text" name="senha" class="form-control" placeholder="Senha" value="<?php echo $senha; ?>">
@@ -404,7 +404,7 @@
             <input type="submit" value="Adicionar" name="adicionar" class="btn" style="background-color: #82031b; border-color:#680215; color:#ffecc7">
             <input type="submit" value="Alterar" name="alterar" class="btn" style="background-color: #82031b; border-color:#680215; color:#ffecc7">
             <input type="submit" value="Remover" name="remover" class="btn" style="background-color: #82031b; border-color:#680215; color:#ffecc7">
-            <input type="submit" value="consultar" name="consultar" class="btn" style="background-color: #82031b; border-color:#680215; color:#ffecc7">
+            <input type="submit" value="Consultar" name="consultar" class="btn" style="background-color: #82031b; border-color:#680215; color:#ffecc7">
         </div>
     </form>
 </div>
@@ -434,8 +434,8 @@
             $sql .= " AND Aluno.id = $id";
         }
         if (!empty($nome)) {
-            $sql .= " AND Aluno.nome = '$nome'";
-        }
+            $sql .= " AND Aluno.nome LIKE '%$nome%'";
+        }        
         if (!empty($data_nascimento)) {
             $sql .= " AND Aluno.data_nascimento = '$data_nascimento'";
         }
@@ -518,6 +518,25 @@
         $conn->close();
         
 
+    }
+    if(isset($_POST['adicionar'])) {
+        $nome = $_POST['nome'] ?? '';
+        $data_nascimento = $_POST['data_nasc'] ?? '';
+        $matricula = $_POST['matricula'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $senha = $_POST['senha'] ?? '';
+        $turma = $_POST['turma'] ?? '';
+        
+        if($turma != ''){
+            $sql_turma = "SELECT id FROM Turma WHERE nome = $turma";
+            $result_turma = $conn->query($sql_turma);
+            if ($result_turma && $result_turma->num_rows > 0) {
+                $turma_row = $result_turma->fetch_assoc();
+                 $turma_id = $turma_row["id"];
+                }
+        }
+        $sql = "INSERT INTO Aluno(nome, data_nascimento, matricula, email, senha, turma)
+        VALUES('$nome', '$data_nascimento', '$matricula', '$email', '$senha', '$turma_id')";
     }
     ?>
 </div>
