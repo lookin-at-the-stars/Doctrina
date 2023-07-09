@@ -519,25 +519,40 @@
         
 
     }
-    if(isset($_POST['adicionar'])) {
+    if (isset($_POST['adicionar'])) {
         $nome = $_POST['nome'] ?? '';
         $data_nascimento = $_POST['data_nasc'] ?? '';
         $matricula = $_POST['matricula'] ?? '';
         $email = $_POST['email'] ?? '';
         $senha = $_POST['senha'] ?? '';
         $turma = $_POST['turma'] ?? '';
-        
-        if($turma != ''){
-            $sql_turma = "SELECT id FROM Turma WHERE nome = $turma";
-            $result_turma = $conn->query($sql_turma);
+    
+        if ($turma != '') {
+            // Prepara a consulta para obter o ID da turma com base no nome
+            $stmt = $conn->prepare("SELECT id FROM Turma WHERE nome = ?");
+            $stmt->bind_param("s", $turma);
+            $stmt->execute();
+            $result_turma = $stmt->get_result();
+    
             if ($result_turma && $result_turma->num_rows > 0) {
                 $turma_row = $result_turma->fetch_assoc();
-                 $turma_id = $turma_row["id"];
-                }
+                $turma_id = $turma_row["id"];
+            }
         }
-        $sql = "INSERT INTO Aluno(nome, data_nascimento, matricula, email, senha, turma)
-        VALUES('$nome', '$data_nascimento', '$matricula', '$email', '$senha', '$turma_id')";
+    
+        // Prepara a consulta para inserir o aluno
+        $stmt = $conn->prepare("INSERT INTO Aluno(nome, data_nascimento, matricula, email, senha, turma_id)
+                                VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssi", $nome, $data_nascimento, $matricula, $email, $senha, $turma_id);
+        $result = $stmt->execute();
+    
+        if ($result === false) {
+            echo "Aluno não adicionado";
+        } else {
+            echo "Aluno adicionado";
+        }
     }
+    
     ?>
 </div>
 
