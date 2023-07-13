@@ -20,7 +20,9 @@
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
-    <?php session_start();?>
+    <?php session_start();
+            if(!isset($_SESSION['nome'])){
+                header('Location: login.html');}?>
 </head>
 
 <body id="page-top">
@@ -133,9 +135,9 @@
 
             <!-- Nav Item - Carteirinha -->
             <li class="nav-item">
-                <a class="nav-link" href="carteirinha.html">
-                    <i class="fas fa-fw fa-address-card"></i>
-                    <span>Carteirinha</span></a>
+                <a class="nav-link" href="consulta-professor.php">
+                    <i class="fas fa-fw fa-graduation-cap"></i>
+                    <span>Consultar Professor</span></a>
             </li>
 
             <!-- Divider -->

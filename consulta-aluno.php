@@ -20,7 +20,9 @@
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
-    <?php session_start();?>
+    <?php session_start();
+        if(!isset($_SESSION['nome'])){
+        header('Location: login.html');}?>
 </head>
 
 <body id="page-top">
@@ -48,7 +50,7 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item">
-                <a class="nav-link" href="index.php">
+                <a class="nav-link" href="index-secretaria.php">
                     <i class="fas fa-fw fa-house-user" style="font-weight: bold;"></i>
                     <span>Início</span></a>
             </li>
@@ -126,16 +128,16 @@
 
             <!-- Nav Item - Tarefas -->
             <li class="nav-item active">
-                <a class="nav-link" href="tarefas.html">
+                <a class="nav-link" href="consulta-aluno.php">
                     <i class="fas fa-fw fa-user-edit"></i>
                     <span>Consultar Aluno</span></a>
             </li>
 
             <!-- Nav Item - Carteirinha -->
             <li class="nav-item">
-                <a class="nav-link" href="carteirinha.html">
-                    <i class="fas fa-fw fa-address-card"></i>
-                    <span>Carteirinha</span></a>
+                <a class="nav-link" href="consulta-professor.php">
+                    <i class="fas fa-fw fa-graduation-cap"></i>
+                    <span>Consultar Professor</span></a>
             </li>
 
             <!-- Divider -->
@@ -369,8 +371,6 @@
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800" style="font-weight: bolder;">Consultar Aluno</h1>
-                        <a href="#" class=" btn" style="background-color: #82031b; color: #ffecc7; font-weight: bold;"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Imprimir Boletim</a>
                     </div>
 <?php
             $id = '';
@@ -398,7 +398,22 @@
             <input type="text" name="matricula" class="form-control" placeholder="Matricula" value="<?php echo $matricula; ?>">
             <input type="email" name="email" class="form-control" placeholder="Email" value="<?php echo $email; ?>">
             <input type="text" name="senha" class="form-control" placeholder="Senha" value="<?php echo $senha; ?>">
-            <input type="text" name="turma" class="form-control" placeholder="Turma" value="<?php echo $turma; ?>">
+    <select id="opcoes" class="form-control" name="turma">
+    <option value="">Turma</option>
+    <?php
+    // Verificar se há resultados da consulta
+    $sql = "SELECT id, nome FROM Turma";
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        // Loop pelos resultados e criar as opções
+        while ($row = $result->fetch_assoc()) {
+            echo "<option value='" . $row["nome"] . "'>" . $row["nome"] . "</option>";
+        }
+    } else {
+        echo "<option value=''>Nenhuma turma encontrada</option>";
+    }
+    ?>
+  </select>
         </div>
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <input type="submit" value="Adicionar" name="adicionar" class="btn" style="background-color: #82031b; border-color:#680215; color:#ffecc7">

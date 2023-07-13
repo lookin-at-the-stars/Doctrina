@@ -20,7 +20,9 @@
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
-    <?php session_start();?>
+    <?php session_start();
+            if(!isset($_SESSION['nome'])){
+                header('Location: login.html');}?>
 </head>
 
 <body id="page-top">

@@ -21,8 +21,8 @@
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <?php session_start();
-            if(!isset($_SESSION['nome'])){
-                header('Location: login.html');}?>
+        if(!isset($_SESSION['nome'])){
+        header('Location: login.html');}?>
 </head>
 
 <body id="page-top">
@@ -49,8 +49,8 @@
             <hr class="sidebar-divider my-0">
 
             <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
-                <a class="nav-link" href="index.php">
+            <li class="nav-item">
+                <a class="nav-link" href="index-secretaria.php">
                     <i class="fas fa-fw fa-house-user" style="font-weight: bold;"></i>
                     <span>Início</span></a>
             </li>
@@ -105,11 +105,11 @@
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
+           <!-- <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
                     aria-expanded="true" aria-controls="collapsePages">
-                    <i class="fas fa-fw fa-mail-bulk"></i>
-                    <span>Boletim</span></a>
+                    <i class="fas fa-fw fa-user-edit"></i>
+                    <span>Consulta de Aluno</span></a>
                 </a>
                 <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
@@ -117,27 +117,27 @@
                         <a class="collapse-item" href="login.html">Login</a>
                         <a class="collapse-item" href="register.html">Register</a>
                         <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
-                        <div class="collapse-divider"></div> -->
+                        <div class="collapse-divider"></div> 
                         <h6 class="collapse-header">Boletins</h6>
                         <a class="collapse-item" href="blank.php">Mensal</a>
                         <a class="collapse-item" href="404.html">Bimestral</a>
                         
                     </div>
-                </div>
+                </div> -->
             </li>
 
             <!-- Nav Item - Tarefas -->
             <li class="nav-item">
-                <a class="nav-link" href="tarefas.html">
-                    <i class="fas fa-fw fa-clipboard"></i>
-                    <span>Tarefas</span></a>
+                <a class="nav-link" href="consulta-aluno.php">
+                    <i class="fas fa-fw fa-user-edit"></i>
+                    <span>Consultar Aluno</span></a>
             </li>
 
             <!-- Nav Item - Carteirinha -->
-            <li class="nav-item">
-                <a class="nav-link" href="carteirinha.html">
-                    <i class="fas fa-fw fa-address-card"></i>
-                    <span>Carteirinha</span></a>
+            <li class="nav-item active">
+                <a class="nav-link" href="consulta-professor.php">
+                    <i class="fas fa-fw fa-graduation-cap"></i>
+                    <span>Consultar Professor</span></a>
             </li>
 
             <!-- Divider -->
@@ -370,164 +370,216 @@
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800" style="font-weight: bolder;">Início</h1>
-                        <a href="#" class=" btn" style="background-color: #82031b; color: #ffecc7; font-weight: bold;"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Imprimir Boletim</a>
+                        <h1 class="h3 mb-0 text-gray-800" style="font-weight: bolder;">Consultar Professor</h1>
                     </div>
-
+<?php
+            $id = '';
+            $nome =  '';
+            $data_nascimento = '';
+            $email = '';
+            $senha = '';
+    
+            // Conexão com o banco de dados
+            $conn = new mysqli("localhost", "root", "", "Doctrina");
+    
+            if ($conn->connect_error) {
+                die("Erro de conexão: " . $conn->connect_error);
+            }
+?>
                     <!-- Content Row -->
                     <div class="row">
+    <form action="" method="post">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <input type="number" name="id" class="form-control" placeholder="ID" value="<?php echo $id; ?>">
+            <input type="text" name="nome" class="form-control" placeholder="Nome" value="<?php echo $nome; ?>">
+            <input type="date" name="data_nasc" class="form-control" placeholder="Data de Nascimento" value="<?php echo $data_nascimento; ?>">
+            <input type="email" name="email" class="form-control" placeholder="Email" value="<?php echo $email; ?>">
+            <input type="text" name="senha" class="form-control" placeholder="Senha" value="<?php echo $senha; ?>">
+    
+        </div>
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <input type="submit" value="Adicionar" name="adicionar" class="btn" style="background-color: #82031b; border-color:#680215; color:#ffecc7">
+            <input type="submit" value="Alterar" name="alterar" class="btn" style="background-color: #82031b; border-color:#680215; color:#ffecc7">
+            <input type="submit" value="Remover" name="remover" class="btn" style="background-color: #82031b; border-color:#680215; color:#ffecc7">
+            <input type="submit" value="Consultar" name="consultar" class="btn" style="background-color: #82031b; border-color:#680215; color:#ffecc7">
+        </div>
+    </form>
+</div>
 
-                        <!-- Earnings (Monthly) Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div style="color:#82031b;" class="text-xs font-weight-bold text-uppercase mb-1">
-                                                Proxima Mensalidade à pagar</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">Fevereiro</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+<div class="row">
+    <?php
 
-                        <!-- Earnings (Monthly) Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div style="color:#82031b;" class="text-xs font-weight-bold text-uppercase mb-1">
-                                                Valor da próxima mensalidade</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">R$658,90</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    // Verifica se o botão "Consultar" foi clicado
+    if(isset($_POST['consultar'])) {
+        // Recupera os valores dos inputs
+        $id = $_POST['id'] ?? '';
+        $nome = $_POST['nome'] ?? '';
+        $data_nascimento = $_POST['data_nasc'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $senha = $_POST['senha'] ?? '';
 
-                        <!-- Earnings (Monthly) Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div style="color:#82031b;" class="text-xs font-weight-bold text-uppercase mb-1">
-                                                Próxmia Tarefa</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">Geografia</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+// Constrói a consulta SQL com base nos parâmetros fornecidos
+$sql = "SELECT Professor.id, Professor.nome, Professor.data_nascimento, Professor.email, Professor.senha
+        FROM Professor
+        WHERE 1=1";
 
-                        <!-- Pending Requests Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div style="color:#82031b;" class="text-xs font-weight-bold text-uppercase mb-1">
-                                                Número de tarefas pendentes</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">9</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-comments fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+if (!empty($id)) {
+    $sql .= " AND Professor.id = $id";
+}
+if (!empty($nome)) {
+    $sql .= " AND Professor.nome LIKE '%$nome%'";
+}        
+if (!empty($data_nascimento)) {
+    $sql .= " AND Professor.data_nascimento = '$data_nascimento'";
+}
+if (!empty($email)) {
+    $sql .= " AND Professor.email = '$email'";
+}
+if (!empty($senha)) {
+    $sql .= " AND Professor.senha = '$senha'";
+}
 
-                    <!-- Content Row -->
+// Executa a consulta no banco de dados
+$result = $conn->query($sql);
 
-                    <div class="row">
+// Verifica se houve algum erro na consulta
+if ($result === false) {
+    echo "Erro na consulta: " . $conn->error;
+} else {
+    // Verifica se a consulta retornou resultados
+    if ($result->num_rows > 0) {
+        // Exibe os resultados em uma tabela
+        echo "<div class='table-responsive'>";
+        echo "<table class='table table-bordered' id='dataTable' width='100%' cellspacing='0'>";
+        echo "<thead><tr><th>ID</th><th>Nome</th><th>Data de Nascimento</th><th>Email</th><th>Senha</th></tr></thead>";
+        echo "<tbody>";
 
-                        <!-- Area Chart -->
-                        <div class="col-xl-8 col-lg-7">
-                            <div class="card shadow mb-4">
-                                <!-- Card Header - Dropdown -->
-                                <div
-                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Grafico de Desempenho do Aluno</h6>
-                                    <div class="dropdown no-arrow">
-                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                            aria-labelledby="dropdownMenuLink">
-                                            <div class="dropdown-header">Dropdown Header:</div>
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#">Something else here</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Card Body -->
-                                <div class="card-body">
-                                    <div class="chart-area">
-                                        <canvas id="myAreaChart"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+        while ($row = $result->fetch_assoc()) {
+            echo "<tr>";
+            echo "<td>".$row["id"]."</td>";
+            echo "<td>".$row["nome"]."</td>";
+            $data_nascimento = date("d-m-Y", strtotime($row["data_nascimento"]));
+            echo "<td>".$data_nascimento."</td>";
+            echo "<td>".$row["email"]."</td>";
+            echo "<td>".$row["senha"]."</td>";
+            echo "</tr>";
+        }
 
-                        <!-- Pie Chart -->
-                        <div class="col-xl-4 col-lg-5">
-                            <div class="card shadow mb-4">
-                                <!-- Card Header - Dropdown -->
-                                <div
-                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Balanço de presenças e faltas</h6>
-                                    <div class="dropdown no-arrow">
-                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                            aria-labelledby="dropdownMenuLink">
-                                            <div class="dropdown-header">Dropdown Header:</div>
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#">Something else here</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Card Body -->
-                                <div class="card-body">
-                                    <div class="chart-pie pt-4 pb-2">
-                                        <canvas id="myPieChart"></canvas>
-                                    </div>
-                                    <div class="mt-4 text-center small">
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-primary"></i> Direct
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-success"></i> Social
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-info"></i> Referral
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        echo "</tbody>";
+        echo "</table>";
+        echo "</div>";
+    } else {
+        echo "Nenhum resultado encontrado.";
+    }
+}
+
+// Fecha a conexão com o banco de dados
+$conn->close();
+    }
+
+
+    if (isset($_POST['adicionar'])) {
+        $nome = $_POST['nome'] ?? '';
+        $data_nascimento = $_POST['data_nasc'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $senha = $_POST['senha'] ?? '';
+    
+        if ($nome != '' && $data_nascimento != '' && $email != '' && $senha != '') {
+            // Prepara a consulta para inserir o professor
+            $stmt = $conn->prepare("INSERT INTO Professor(nome, data_nascimento, email, senha)
+                                    VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("ssss", $nome, $data_nascimento, $email, $senha);
+            $result = $stmt->execute();
+    
+            if ($result === false) {
+                echo "Professor não adicionado. Algum dado está conflitando com o de outro professor.";
+            } else {
+                echo "Professor adicionado.";
+            }
+        } else {
+            echo "Por favor, preencha todos os campos.";
+        }
+    }
+    
+if (isset($_POST['remover'])) {
+    $id = $_POST['id'] ?? '';
+    $nome = $_POST['nome'] ?? '';
+    $data_nascimento = $_POST['data_nasc'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $senha = $_POST['senha'] ?? '';
+
+    // Monta a consulta SQL de remoção
+    $sql = "DELETE FROM Professor WHERE 1=1";
+
+    if (!empty($id)) {
+        $sql .= " AND id = $id";
+    }
+    if (!empty($nome)) {
+        $sql .= " AND nome = '$nome'";
+    }
+    if (!empty($data_nascimento)) {
+        $sql .= " AND data_nascimento = '$data_nascimento'";
+    }
+    if (!empty($email)) {
+        $sql .= " AND email = '$email'";
+    }
+    if (!empty($senha)) {
+        $sql .= " AND senha = '$senha'";
+    }
+
+    // Executa a consulta de remoção
+    $result = $conn->query($sql);
+    if ($result === false) {
+        echo "Erro ao remover o professor.";
+    } else {
+        echo "Professor removido com sucesso.";
+    }
+}
+
+if (isset($_POST['alterar'])) {
+    $id = $_POST['id'] ?? '';
+    $nome = $_POST['nome'] ?? '';
+    $data_nascimento = $_POST['data_nasc'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $senha = $_POST['senha'] ?? '';
+
+    // Verifica se o ID do professor foi fornecido
+    if (empty($id)) {
+        echo "ID do professor não fornecido.";
+        exit;
+    }
+
+    // Verifica se algum campo está vazio
+    if (empty($nome) || empty($data_nascimento) || empty($email) || empty($senha)) {
+        echo "Por favor, preencha todos os campos.";
+        exit;
+    }
+
+    // Prepara a consulta para atualizar os dados do professor
+    $stmt = $conn->prepare("UPDATE Professor SET nome = ?, data_nascimento = ?, email = ?, senha = ? WHERE id = ?");
+    $stmt->bind_param("ssssi", $nome, $data_nascimento, $email, $senha, $id);
+    $result = $stmt->execute();
+
+    if ($result === false) {
+        echo "Erro ao atualizar os dados do professor.";
+    } else {
+        echo "Dados do professor atualizados com sucesso.";
+    }
+
+    // Fecha a conexão com o banco de dados
+    $stmt->close();
+    $conn->close();
+}
+
+    
+    
+    ?>
+</div>
+
+
+<div class="row">
+</div>
+
 
                     <!-- Content Row -->
                     <!-- <div class="row">
@@ -740,11 +792,8 @@
     <script src="js/sb-admin-2.min.js"></script>
 
     <!-- Page level plugins -->
-    <script src="vendor/chart.js/Chart.min.js"></script>
 
     <!-- Page level custom scripts -->
-    <script src="js/demo/chart-area-demo.js"></script>
-    <script src="js/demo/chart-pie-demo.js"></script>
 
 </body>
 
