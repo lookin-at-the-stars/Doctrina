@@ -127,7 +127,7 @@
             </li>
 
             <!-- Nav Item - Tarefas -->
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="consulta-aluno.php">
                     <i class="fas fa-fw fa-user-edit"></i>
                     <span>Consultar Aluno</span></a>
@@ -145,8 +145,8 @@
                     <i class="fas fa-fw fa-users"></i>
                     <span>Consultar Turma</span></a>
             </li>
-
-            <li class="nav-item">
+            
+            <li class="nav-item active">
                 <a class="nav-link" href="consulta-disc.php">
                     <i class="fas fa-fw fa-briefcase"></i>
                     <span>Consultar Disciplina</span></a>
@@ -382,16 +382,14 @@
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800" style="font-weight: bolder;">Consultar Aluno</h1>
+                        <h1 class="h3 mb-0 text-gray-800" style="font-weight: bolder;">Consultar Disciplina</h1>
                     </div>
 <?php
             $id = '';
             $nome =  '';
             $data_nascimento = '';
-            $matricula = '';
             $email = '';
             $senha = '';
-            $turma = '';
     
             // Conexão com o banco de dados
             $conn = new mysqli("localhost", "root", "", "Doctrina");
@@ -406,11 +404,7 @@
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <input type="number" name="id" class="form-control" placeholder="ID" value="<?php echo $id; ?>">
             <input type="text" name="nome" class="form-control" placeholder="Nome" value="<?php echo $nome; ?>">
-            <input type="date" name="data_nasc" class="form-control" placeholder="Data de Nascimento" value="<?php echo $data_nascimento; ?>">
-            <input type="text" name="matricula" class="form-control" placeholder="Matricula" value="<?php echo $matricula; ?>">
-            <input type="email" name="email" class="form-control" placeholder="Email" value="<?php echo $email; ?>">
-            <input type="text" name="senha" class="form-control" placeholder="Senha" value="<?php echo $senha; ?>">
-    <select id="opcoes" class="form-control" name="turma">
+            <select id="opcoes" class="form-control" name="turma">
     <option value="">Turma</option>
     <?php
     // Verificar se há resultados da consulta
@@ -419,14 +413,30 @@
     if ($result->num_rows > 0) {
         // Loop pelos resultados e criar as opções
         while ($row = $result->fetch_assoc()) {
-            echo "<option value='" . $row["nome"] . "'>" . $row["nome"] . "</option>";
+            echo "<option value='" . $row["id"] . "'>" . $row["nome"] . "</option>";
         }
     } else {
         echo "<option value=''>Nenhuma turma encontrada</option>";
     }
     ?>
-  </select>
-        </div>
+            </select>
+            <select id="opcoes" class="form-control" name="professor">
+  <option value="">Professor</option>
+    <?php
+    // Verificar se há resultados da consulta
+    $sql = "SELECT id, nome FROM Professor";
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        // Loop pelos resultados e criar as opções
+        while ($row = $result->fetch_assoc()) {
+            echo "<option value='" . $row["id"] . "'>" . $row["nome"] . "</option>";
+        }
+    } else {
+        echo "<option value=''>Nenhuma turma encontrada</option>";
+    }
+    ?>
+        </select>
+</div>
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <input type="submit" value="Adicionar" name="adicionar" class="btn" style="background-color: #82031b; border-color:#680215; color:#ffecc7">
             <input type="submit" value="Alterar" name="alterar" class="btn" style="background-color: #82031b; border-color:#680215; color:#ffecc7">
@@ -444,250 +454,188 @@
         // Recupera os valores dos inputs
         $id = $_POST['id'] ?? '';
         $nome = $_POST['nome'] ?? '';
-        $data_nascimento = $_POST['data_nasc'] ?? '';
-        $matricula = $_POST['matricula'] ?? '';
-        $email = $_POST['email'] ?? '';
-        $senha = $_POST['senha'] ?? '';
         $turma = $_POST['turma'] ?? '';
+        $professor = $_POST['professor'] ?? '';
 
-        // Constrói a consulta SQL com base nos parâmetros fornecidos
-        $sql = "SELECT Aluno.id, Aluno.nome, Aluno.data_nascimento, Aluno.matricula, Aluno.email, Aluno.senha, Aluno.turma_id
-        FROM Aluno
-        LEFT JOIN Turma ON Aluno.turma_id = Turma.id
+
+// Constrói a consulta SQL com base nos parâmetros fornecidos
+$sql = "SELECT Disciplina.id, Disciplina.nome, Disciplina.turma_id, Disciplina.professor_id
+        FROM Disciplina
         WHERE 1=1";
 
+if (!empty($id)) {
+    $sql .= " AND Disciplina.id = $id";
+}
+if (!empty($nome)) {
+    $sql .= " AND Disciplina.nome LIKE '%$nome%'";
+}        
+if (!empty($data_nascimento)) {
+    $sql .= " AND Disciplina.turma_id = '$turma'";
+}
+if (!empty($email)) {
+    $sql .= " AND Disciplina.professor_id = '$professor'";
+}
+// Executa a consulta no banco de dados
+$result = $conn->query($sql);
 
-        if (!empty($id)) {
-            $sql .= " AND Aluno.id = $id";
-        }
-        if (!empty($nome)) {
-            $sql .= " AND Aluno.nome LIKE '%$nome%'";
-        }        
-        if (!empty($data_nascimento)) {
-            $sql .= " AND Aluno.data_nascimento = '$data_nascimento'";
-        }
-        if (!empty($matricula)) {
-            $sql .= " AND Aluno.matricula = '$matricula'";
-        }
-        if (!empty($email)) {
-            $sql .= " AND Aluno.email = '$email'";
-        }
-        if (!empty($senha)) {
-            $sql .= " AND Aluno.senha = '$senha'";
-        }        
-        if (!empty($turma)) {
-            $sql_turma = "SELECT id FROM Turma WHERE nome = '$turma'";
-            $result_turma = $conn->query($sql_turma);
-            if ($result_turma && $result_turma->num_rows > 0) {
-                $row_turma = $result_turma->fetch_assoc();
-                $id_turma = $row_turma['id'];
-                $sql .= " AND Aluno.turma_id = $id_turma";
-            } else {
-                echo "Nenhum resultado encontrado.";
-                exit;
-            }
-        }
-        
-           
-        // Executa a consulta no banco de dados
-        $result = $conn->query($sql);               
-        // Verifica se houve algum erro na consulta
-        if ($result === false) {
-            echo "Erro na consulta: " . $conn->error;
-        } else {
-            // Verifica se a consulta retornou resultados
-            if ($result->num_rows > 0) {
-                // Exibe os resultados em uma tabela
-                echo "<div class='table-responsive'>";
-                echo "<table class='table table-bordered' id='dataTable' width='100%' cellspacing='0'>";
-                echo "<thead><tr><th>ID</th><th>Nome</th><th>Data de Nascimento</th><th>Matricula</th><th>Email</th><th>Senha</th><th>Turma</th></tr></thead>";
-                echo "<tbody>";
-        
-                while ($row = $result->fetch_assoc()) {
-                    echo "<tr>";
-                    echo "<td>".$row["id"]."</td>";
-                    echo "<td>".$row["nome"]."</td>";
-                    $data_nascimento = date("d-m-Y", strtotime($row["data_nascimento"]));
-                    echo "<td>".$data_nascimento."</td>";
-                    echo "<td>".$row["matricula"]."</td>";
-                    echo "<td>".$row["email"]."</td>";
-                    echo "<td>".$row["senha"]."</td>";
-                   // Verifica se há uma turma associada ao aluno
-                   if (!empty($row["turma_id"])) {
-                         $turma_id = $row["turma_id"];
-                        
-                        // Consulta o nome da turma com base no turma_id
-                         $sql_turma = "SELECT nome FROM Turma WHERE id = $turma_id";
-                         $result_turma = $conn->query($sql_turma);
-                        
-                         if ($result_turma && $result_turma->num_rows > 0) {
-                            $turma_row = $result_turma->fetch_assoc();
-                             $turma_nome = $turma_row["nome"];
-                             echo "<td>".$turma_nome."</td>";
-                         } else {
-                            echo "<td>Turma não encontrada</td>";
-                         }
-                     } else {
-                         echo "<td>Não atribuído</td>";
-                     }
-                    echo "</tr>";
+// Verifica se houve algum erro na consulta
+if ($result === false) {
+    echo "Erro na consulta: " . $conn->error;
+} else {
+    // Verifica se a consulta retornou resultados
+    if ($result->num_rows > 0) {
+        // Exibe os resultados em uma tabela
+        echo "<div class='table-responsive'>";
+        echo "<table class='table table-bordered' id='dataTable' width='100%' cellspacing='0'>";
+        echo "<thead><tr><th>ID</th><th>Nome</th><th>Turma</th><th>Professor</th></tr></thead>";
+        echo "<tbody>";
+
+        while ($row = $result->fetch_assoc()) {
+            echo "<tr>";
+            echo "<td>".$row["id"]."</td>";
+            echo "<td>".$row["nome"]."</td>";
+            if (!empty($row["turma_id"])) {
+                $turma_id = $row["turma_id"];
+               
+               // Consulta o nome da turma com base no turma_id
+                $sql_turma = "SELECT nome FROM Turma WHERE id = $turma_id";
+                $result_turma = $conn->query($sql_turma);
+               
+                if ($result_turma && $result_turma->num_rows > 0) {
+                   $turma_row = $result_turma->fetch_assoc();
+                    $turma_nome = $turma_row["nome"];
+                    echo "<td>".$turma_nome."</td>";
+                } else {
+                   echo "<td>Turma não encontrada</td>";
                 }
-                
-
-                echo "</tbody>";
-                echo "</table>";
-                echo "</div>";
             } else {
-                echo "Nenhum resultado encontrado.";
+                echo "<td>Não atribuído</td>";
             }
+            if (!empty($row["professor_id"])) {
+                $professor_id = $row["professor_id"];
+               
+               // Consulta o nome da turma com base no turma_id
+                $sql_professor = "SELECT nome FROM Professor WHERE id = $professor_id";
+                $result_professor = $conn->query($sql_professor);
+                if ($result_professor && $result_professor->num_rows > 0) {
+                   $professor_row = $result_professor->fetch_assoc();
+                    $professor_nome = $professor_row["nome"];
+                    echo "<td>".$professor_nome."</td>";
+                } else {
+                   echo "<td>Professor não encontrado</td>";
+                }
+            } else {
+                echo "<td>Não atribuído</td>";
+            }
+            echo "</tr>";
         }
-        // Fecha a conexão com o banco de dados
-        $conn->close();
-        
 
+        echo "</tbody>";
+        echo "</table>";
+        echo "</div>";
+    } else {
+        echo "Nenhum resultado encontrado.";
     }
+}
+
+// Fecha a conexão com o banco de dados
+$conn->close();
+    }
+
+
     if (isset($_POST['adicionar'])) {
         $nome = $_POST['nome'] ?? '';
         $data_nascimento = $_POST['data_nasc'] ?? '';
-        $matricula = $_POST['matricula'] ?? '';
         $email = $_POST['email'] ?? '';
         $senha = $_POST['senha'] ?? '';
-        $turma = $_POST['turma'] ?? '';
     
-        if ($nome!= '' &&$data_nascimento!= ''&&$matricula!= '' &&$email!= '' 
-        &&$senha!= '' &&$turma != '') {
-            // Prepara a consulta para obter o ID da turma com base no nome
-            $stmt = $conn->prepare("SELECT id FROM Turma WHERE nome = ?");
-            $stmt->bind_param("s", $turma);
-            $stmt->execute();
-            $result_turma = $stmt->get_result();
+        if ($nome != '' && $data_nascimento != '' && $email != '' && $senha != '') {
+            // Prepara a consulta para inserir o professor
+            $stmt = $conn->prepare("INSERT INTO Professor(nome, data_nascimento, email, senha)
+                                    VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("ssss", $nome, $data_nascimento, $email, $senha);
+            $result = $stmt->execute();
     
-            if ($result_turma && $result_turma->num_rows > 0) {
-                $turma_row = $result_turma->fetch_assoc();
-                $turma_id = $turma_row["id"];
+            if ($result === false) {
+                echo "Professor não adicionado. Algum dado está conflitando com o de outro professor.";
             } else {
-                echo "Turma não existente";
-                exit;
+                echo "Professor adicionado.";
             }
-        
-    
-        // Prepara a consulta para inserir o aluno
-        $stmt = $conn->prepare("INSERT INTO Aluno(nome, data_nascimento, matricula, email, senha, turma_id)
-                                VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssi", $nome, $data_nascimento, $matricula, $email, $senha, $turma_id);
-        $result = $stmt->execute();
-    
-        if ($result === false) {
-            echo "Aluno não adicionado, Algum dado está conflitando com o de outro aluno";
         } else {
-            echo "Aluno adicionado";
+            echo "Por favor, preencha todos os campos.";
         }
-    } else{
-        echo "Por favor, preencha todos os campos, com exceção do ID";
+    }
+    
+if (isset($_POST['remover'])) {
+    $id = $_POST['id'] ?? '';
+    $nome = $_POST['nome'] ?? '';
+    $data_nascimento = $_POST['data_nasc'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $senha = $_POST['senha'] ?? '';
+
+    // Monta a consulta SQL de remoção
+    $sql = "DELETE FROM Professor WHERE 1=1";
+
+    if (!empty($id)) {
+        $sql .= " AND id = $id";
+    }
+    if (!empty($nome)) {
+        $sql .= " AND nome = '$nome'";
+    }
+    if (!empty($data_nascimento)) {
+        $sql .= " AND data_nascimento = '$data_nascimento'";
+    }
+    if (!empty($email)) {
+        $sql .= " AND email = '$email'";
+    }
+    if (!empty($senha)) {
+        $sql .= " AND senha = '$senha'";
+    }
+
+    // Executa a consulta de remoção
+    $result = $conn->query($sql);
+    if ($result === false) {
+        echo "Erro ao remover o professor.";
+    } else {
+        echo "Professor removido com sucesso.";
     }
 }
-if (isset($_POST['remover'])) {
-        $id = $_POST['id'] ?? '';
-        $nome = $_POST['nome'] ?? '';
-        $data_nascimento = $_POST['data_nasc'] ?? '';
-        $matricula = $_POST['matricula'] ?? '';
-        $email = $_POST['email'] ?? '';
-        $senha = $_POST['senha'] ?? '';
-        $turma = $_POST['turma'] ?? '';
-    
-        // Monta a consulta SQL de remoção
-        $sql = "DELETE FROM Aluno WHERE 1=1";
-    
-        if (!empty($id)) {
-            $sql .= " AND id = $id";
-        }
-        if (!empty($nome)) {
-            $sql .= " AND nome = '$nome'";
-        }
-        if (!empty($data_nascimento)) {
-            $sql .= " AND data_nascimento = '$data_nascimento'";
-        }
-        if (!empty($matricula)) {
-            $sql .= " AND matricula = '$matricula'";
-        }
-        if (!empty($email)) {
-            $sql .= " AND email = '$email'";
-        }
-        if (!empty($senha)) {
-            $sql .= " AND senha = '$senha'";
-        }
-        if (!empty($turma)) {
-            // Obtém o ID da turma com base no nome
-            $sql_turma = "SELECT id FROM Turma WHERE nome = '$turma'";
-            $result_turma = $conn->query($sql_turma);
-    
-            if ($result_turma && $result_turma->num_rows > 0) {
-                $turma_row = $result_turma->fetch_assoc();
-                $turma_id = $turma_row["id"];
-                $sql .= " AND turma_id = $turma_id";
-            } else {
-                echo "Turma não encontrada.";
-                exit;
-            }
-        }
-            // Executa a consulta de remoção
-            $result = $conn->query($sql);
-            if ($result === false) {
-                echo "Erro ao remover o aluno.";
-            } else {
-                echo "Aluno removido com sucesso.";
-            }
+
+if (isset($_POST['alterar'])) {
+    $id = $_POST['id'] ?? '';
+    $nome = $_POST['nome'] ?? '';
+    $data_nascimento = $_POST['data_nasc'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $senha = $_POST['senha'] ?? '';
+
+    // Verifica se o ID do professor foi fornecido
+    if (empty($id)) {
+        echo "ID do professor não fornecido.";
+        exit;
     }
-    if (isset($_POST['alterar'])) {
-        $id = $_POST['id'] ?? '';
-        $nome = $_POST['nome'] ?? '';
-        $data_nascimento = $_POST['data_nasc'] ?? '';
-        $matricula = $_POST['matricula'] ?? '';
-        $email = $_POST['email'] ?? '';
-        $senha = $_POST['senha'] ?? '';
-        $turma = $_POST['turma'] ?? '';
-    
-        // Verifica se o ID do aluno foi fornecido
-        if (empty($id)) {
-            echo "ID do aluno não fornecido.";
-            exit;
-        }
-    
-        // Verifica se algum campo está vazio
-        if (empty($nome) || empty($data_nascimento) || empty($matricula) || empty($email) || empty($senha) || empty($turma)) {
-            echo "Por favor, preencha todos os campos.";
-            exit;
-        }
-    
-        // Prepara a consulta para obter o ID da turma com base no nome
-        $stmt = $conn->prepare("SELECT id FROM Turma WHERE nome = ?");
-        $stmt->bind_param("s", $turma);
-        $stmt->execute();
-        $result_turma = $stmt->get_result();
-    
-        if ($result_turma && $result_turma->num_rows > 0) {
-            $turma_row = $result_turma->fetch_assoc();
-            $turma_id = $turma_row["id"];
-        } else {
-            echo "Turma não existente";
-            exit;
-        }
-    
-        // Prepara a consulta para atualizar os dados do aluno
-        $stmt = $conn->prepare("UPDATE Aluno SET nome = ?, data_nascimento = ?, matricula = ?, email = ?, senha = ?, turma_id = ? WHERE id = ?");
-        $stmt->bind_param("ssssssi", $nome, $data_nascimento, $matricula, $email, $senha, $turma_id, $id);
-        $result = $stmt->execute();
-    
-        if ($result === false) {
-            echo "Erro ao atualizar os dados do aluno.";
-        } else {
-            echo "Dados do aluno atualizados com sucesso.";
-        }
-    
-        // Fecha a conexão com o banco de dados
-        $stmt->close();
-        $conn->close();
+
+    // Verifica se algum campo está vazio
+    if (empty($nome) || empty($data_nascimento) || empty($email) || empty($senha)) {
+        echo "Por favor, preencha todos os campos.";
+        exit;
     }
+
+    // Prepara a consulta para atualizar os dados do professor
+    $stmt = $conn->prepare("UPDATE Professor SET nome = ?, data_nascimento = ?, email = ?, senha = ? WHERE id = ?");
+    $stmt->bind_param("ssssi", $nome, $data_nascimento, $email, $senha, $id);
+    $result = $stmt->execute();
+
+    if ($result === false) {
+        echo "Erro ao atualizar os dados do professor.";
+    } else {
+        echo "Dados do professor atualizados com sucesso.";
+    }
+
+    // Fecha a conexão com o banco de dados
+    $stmt->close();
+    $conn->close();
+}
+
     
     
     ?>

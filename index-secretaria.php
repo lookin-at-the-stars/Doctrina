@@ -140,6 +140,18 @@
                     <span>Consultar Professor</span></a>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link" href="consulta-turma.php">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Consultar Turma</span></a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="consulta-disc.php">
+                    <i class="fas fa-fw fa-briefcase"></i>
+                    <span>Consultar Disciplina</span></a>
+            </li>
+
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
 
