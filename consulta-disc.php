@@ -545,96 +545,85 @@ $conn->close();
 
     if (isset($_POST['adicionar'])) {
         $nome = $_POST['nome'] ?? '';
-        $data_nascimento = $_POST['data_nasc'] ?? '';
-        $email = $_POST['email'] ?? '';
-        $senha = $_POST['senha'] ?? '';
+        $turma_id = $_POST['turma'] ?? '';
+        $professor_id = $_POST['professor'] ?? '';
     
-        if ($nome != '' && $data_nascimento != '' && $email != '' && $senha != '') {
-            // Prepara a consulta para inserir o professor
-            $stmt = $conn->prepare("INSERT INTO Professor(nome, data_nascimento, email, senha)
-                                    VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("ssss", $nome, $data_nascimento, $email, $senha);
+        if ($nome != '' && $turma_id != '' && $professor_id != '') {
+            // Prepara a consulta para inserir a disciplina
+            $stmt = $conn->prepare("INSERT INTO Disciplina(nome, turma_id, professor_id)
+                                    VALUES (?, ?, ?)");
+            $stmt->bind_param("sii", $nome, $turma_id, $professor_id);
             $result = $stmt->execute();
     
             if ($result === false) {
-                echo "Professor não adicionado. Algum dado está conflitando com o de outro professor.";
+                echo "Disciplina não adicionada. Algum dado está conflitando com o de outra disciplina.";
             } else {
-                echo "Professor adicionado.";
+                echo "Disciplina adicionada.";
             }
         } else {
             echo "Por favor, preencha todos os campos.";
         }
     }
     
-if (isset($_POST['remover'])) {
-    $id = $_POST['id'] ?? '';
-    $nome = $_POST['nome'] ?? '';
-    $data_nascimento = $_POST['data_nasc'] ?? '';
-    $email = $_POST['email'] ?? '';
-    $senha = $_POST['senha'] ?? '';
-
-    // Monta a consulta SQL de remoção
-    $sql = "DELETE FROM Professor WHERE 1=1";
-
-    if (!empty($id)) {
-        $sql .= " AND id = $id";
+    
+    if (isset($_POST['remover'])) {
+        $id = $_POST['id'] ?? '';
+        $nome = $_POST['nome'] ?? '';
+    
+        // Monta a consulta SQL de remoção
+        $sql = "DELETE FROM Disciplina WHERE 1=1";
+    
+        if (!empty($id)) {
+            $sql .= " AND id = $id";
+        }
+        if (!empty($nome)) {
+            $sql .= " AND nome = '$nome'";
+        }
+    
+        // Executa a consulta de remoção
+        $result = $conn->query($sql);
+        if ($result === false) {
+            echo "Erro ao remover a disciplina.";
+        } else {
+            echo "Disciplina removida com sucesso.";
+        }
     }
-    if (!empty($nome)) {
-        $sql .= " AND nome = '$nome'";
-    }
-    if (!empty($data_nascimento)) {
-        $sql .= " AND data_nascimento = '$data_nascimento'";
-    }
-    if (!empty($email)) {
-        $sql .= " AND email = '$email'";
-    }
-    if (!empty($senha)) {
-        $sql .= " AND senha = '$senha'";
-    }
+    
 
-    // Executa a consulta de remoção
-    $result = $conn->query($sql);
-    if ($result === false) {
-        echo "Erro ao remover o professor.";
-    } else {
-        echo "Professor removido com sucesso.";
+    if (isset($_POST['alterar'])) {
+        $id = $_POST['id'] ?? '';
+        $nome = $_POST['nome'] ?? '';
+        $turma = $_POST['turma'] ?? '';
+        $professor = $_POST['professor'] ?? '';
+    
+        // Verifica se o ID da disciplina foi fornecido
+        if (empty($id)) {
+            echo "ID da disciplina não fornecido.";
+            exit;
+        }
+    
+        // Verifica se algum campo está vazio
+        if (empty($nome) || empty($turma) || empty($professor)) {
+            echo "Por favor, preencha todos os campos.";
+            exit;
+        }
+    
+        // Prepara a consulta para atualizar os dados da disciplina
+        $stmt = $conn->prepare("UPDATE Disciplina SET nome = ?, turma_id = ?, professor_id = ? WHERE id = ?");
+        $stmt->bind_param("siii", $nome, $turma, $professor, $id);
+        $result = $stmt->execute();
+    
+        if ($result === false) {
+            echo "Erro ao atualizar os dados da disciplina.";
+        } else {
+            echo "Dados da disciplina atualizados com sucesso.";
+        }
+    
+        // Fecha a conexão com o banco de dados
+        $stmt->close();
+        $conn->close();
     }
-}
-
-if (isset($_POST['alterar'])) {
-    $id = $_POST['id'] ?? '';
-    $nome = $_POST['nome'] ?? '';
-    $data_nascimento = $_POST['data_nasc'] ?? '';
-    $email = $_POST['email'] ?? '';
-    $senha = $_POST['senha'] ?? '';
-
-    // Verifica se o ID do professor foi fornecido
-    if (empty($id)) {
-        echo "ID do professor não fornecido.";
-        exit;
-    }
-
-    // Verifica se algum campo está vazio
-    if (empty($nome) || empty($data_nascimento) || empty($email) || empty($senha)) {
-        echo "Por favor, preencha todos os campos.";
-        exit;
-    }
-
-    // Prepara a consulta para atualizar os dados do professor
-    $stmt = $conn->prepare("UPDATE Professor SET nome = ?, data_nascimento = ?, email = ?, senha = ? WHERE id = ?");
-    $stmt->bind_param("ssssi", $nome, $data_nascimento, $email, $senha, $id);
-    $result = $stmt->execute();
-
-    if ($result === false) {
-        echo "Erro ao atualizar os dados do professor.";
-    } else {
-        echo "Dados do professor atualizados com sucesso.";
-    }
-
-    // Fecha a conexão com o banco de dados
-    $stmt->close();
-    $conn->close();
-}
+    
 
     
     
