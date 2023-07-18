@@ -36,11 +36,11 @@
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
                         <div class="row" style="background-color: #f5e3c1;">
-                            <div class="col-lg-6 d-none d-lg-block" style="padding-top: 1rem; background-color: #e7d5b4; color: #660114;"><a class="sidebar-brand d-flex align-items-center justify-content-center" style="color:#660114;">-->
+                            <div class="col-lg-6 d-none d-lg-block" style="padding-top: 1rem; background-color: #e7d5b4; color: #660114;"><a class="sidebar-brand d-flex align-items-center justify-content-center" style="color:#660114;">
                                 <div class="sidebar-brand-icon rotate-n-15">
                                    <!-- <i style="font-size: 60px;" class="fas fa-graduation-cap"></i> -->
                                 </div>      
-                                <div><img src="/Doctrina/img/logo.png" alt="" style="height: 30rem; width: 45 rem;"> </div>                      
+                                <div><a href="login.html"><img src="/Doctrina/img/logo.png" alt="" href="login.html" style="height: 30rem; width: 45 rem;"></a> </div>                      
                             <!-- <div class="" style="font-size: 54px ; color: #660114; font-weight: 800;">DOCTRINA</div> -->
                         </div>
                             <div class="col-lg-6">

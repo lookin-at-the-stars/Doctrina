@@ -20,7 +20,15 @@
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
-    <?php session_start();?>
+    <?php session_start();
+    if(!isset($_SESSION['nome'])){
+        header('Location: login.html');}
+            // Conexão com o banco de dados
+            $conn = new mysqli("localhost", "root", "", "Doctrina");
+    
+            if ($conn->connect_error) {
+                die("Erro de conexão: " . $conn->connect_error);
+            }?>
 </head>
 
 <body id="page-top">
@@ -139,8 +147,8 @@
             </li>
 
             <!-- Nav Item - Registro de Aula -->
-            <li class="nav-item">
-                <a class="nav-link" href="chamada.html">
+            <li class="nav-item active">
+                <a class="nav-link" href="chamada.php">
                     <i class="fas fa-fw fa-chalkboard-teacher"></i>
                     <span>Registro de Aula</span></a>
             </li>
@@ -374,88 +382,67 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-1 text-gray-800">Other Utilities</h1>
-                    <p class="mb-4">Bootstrap's default utility classes can be found on the official <a
-                            href="https://getbootstrap.com/docs">Bootstrap Documentation</a> page. The custom utilities
-                        below were created to extend this theme past the default utility classes built into Bootstrap's
-                        framework.</p>
+                    <h1 class="h3 mb-1 text-gray-800">Registro de Aula</h1>
+                    <form action="" method="post">
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <select id="turma" class="form-control" name="turma">
+    <option value="">Turma</option>
+    <?php
+    // Verificar se há resultados da consulta
+    $sql = "SELECT DISTINCT t.id, t.nome 
+            FROM Turma t 
+            INNER JOIN Disciplina d ON t.id = d.turma_id 
+            INNER JOIN Professor p ON d.professor_id = p.id 
+            WHERE p.id = ?";
+    
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $_SESSION['id']); // Substitua $_SESSION['id'] pelo nome correto da variável de sessão que armazena o ID do professor logado
+    $stmt->execute();
+    $result = $stmt->get_result();
 
+    if ($result->num_rows > 0) {
+        // Loop pelos resultados e criar as opções
+        while ($row = $result->fetch_assoc()) {
+            echo "<option value='" . $row["id"] . "'>" . $row["nome"] . "</option>";
+        }
+    } else {
+        echo "<option value=''>Nenhuma turma encontrada</option>";
+    }
+    ?>
+</select>
+<br>
+<select id="disciplina" class="form-control" name="disciplina">
+    <option value="">Disciplina</option>
+    <?php
+    // Verificar se há resultados da consulta
+    $sql = "SELECT id, nome FROM Disciplina WHERE professor_id = '$_SESSION[id]'";
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        // Loop pelos resultados e criar as opções
+        while ($row = $result->fetch_assoc()) {
+            echo "<option value='" . $row["id"] . "'>" . $row["nome"] . "</option>";
+        }
+    } else {
+        echo "<option value=''>Nenhuma disciplina encontrada</option>";
+    }
+    ?>
+</select>
+<br>
+<input type="date" class="form-control">
+<input type="submit" class="form-control btn btn-google" value="Mostrar Chamada" name="mostrar">
+                    </form>
+</div>
                     <!-- Content Row -->
                     <div class="row">
+                <?php
+                if(isset($_POST['mostrar'])){
+                    echo"<form method='post' action=''>
+                    
+                    
+                    </form>";
+                }
+                ?>
 
-                        <div class="col-lg-6">
-
-                            <!-- Overflow Hidden -->
-                            <div class="card mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Overflow Hidden Utilty</h6>
-                                </div>
-                                <div class="card-body">
-                                    Use <code>.o-hidden</code> to set the overflow property of any element to hidden.
-                                </div>
-                            </div>
-
-                            <!-- Progress Small -->
-                            <div class="card mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Progress Small Utility</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-1 small">Normal Progress Bar</div>
-                                    <div class="progress mb-4">
-                                        <div class="progress-bar" role="progressbar" style="width: 75%"
-                                            aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <div class="mb-1 small">Small Progress Bar</div>
-                                    <div class="progress progress-sm mb-2">
-                                        <div class="progress-bar" role="progressbar" style="width: 75%"
-                                            aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    Use the <code>.progress-sm</code> class along with <code>.progress</code>
-                                </div>
-                            </div>
-
-                            <!-- Dropdown No Arrow -->
-                            <div class="card mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Dropdown - No Arrow</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="dropdown no-arrow mb-4">
-                                        <button class="btn btn-secondary dropdown-toggle" type="button"
-                                            id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
-                                            aria-expanded="false">
-                                            Dropdown (no arrow)
-                                        </button>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                            <a class="dropdown-item" href="#">Something else here</a>
-                                        </div>
-                                    </div>
-                                    Add the <code>.no-arrow</code> class alongside the <code>.dropdown</code>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="col-lg-6">
-
-                            <!-- Roitation Utilities -->
-                            <div class="card">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Rotation Utilities</h6>
-                                </div>
-                                <div class="card-body text-center">
-                                    <div class="bg-primary text-white p-3 rotate-15 d-inline-block my-4">.rotate-15
-                                    </div>
-                                    <hr>
-                                    <div class="bg-primary text-white p-3 rotate-n-15 d-inline-block my-4">.rotate-n-15
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
 
                     </div>
 
