@@ -383,65 +383,134 @@
 
                     <!-- Page Heading -->
                     <h1 class="h3 mb-1 text-gray-800">Registro de Aula</h1>
-                    <form action="" method="post">
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <select id="turma" class="form-control" name="turma">
-    <option value="">Turma</option>
-    <?php
-    // Verificar se há resultados da consulta
-    $sql = "SELECT DISTINCT t.id, t.nome 
-            FROM Turma t 
-            INNER JOIN Disciplina d ON t.id = d.turma_id 
-            INNER JOIN Professor p ON d.professor_id = p.id 
-            WHERE p.id = ?";
-    
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $_SESSION['id']); // Substitua $_SESSION['id'] pelo nome correto da variável de sessão que armazena o ID do professor logado
-    $stmt->execute();
-    $result = $stmt->get_result();
+<form action="" method="post">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <select id="turma" class="form-control" name="turma">
+            <option value="">Turma</option>
+            <?php
+            // Verificar se há resultados da consulta
+            $sql = "SELECT DISTINCT t.id, t.nome 
+                    FROM Turma t 
+                    INNER JOIN Disciplina d ON t.id = d.turma_id 
+                    INNER JOIN Professor p ON d.professor_id = p.id 
+                    WHERE p.id = ?";
+            
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $_SESSION['id']); // Substitua $_SESSION['id'] pelo nome correto da variável de sessão que armazena o ID do professor logado
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
-        // Loop pelos resultados e criar as opções
-        while ($row = $result->fetch_assoc()) {
-            echo "<option value='" . $row["id"] . "'>" . $row["nome"] . "</option>";
-        }
-    } else {
-        echo "<option value=''>Nenhuma turma encontrada</option>";
-    }
-    ?>
-</select>
-<br>
-<select id="disciplina" class="form-control" name="disciplina">
-    <option value="">Disciplina</option>
-    <?php
-    // Verificar se há resultados da consulta
-    $sql = "SELECT id, nome FROM Disciplina WHERE professor_id = '$_SESSION[id]'";
-    $result = $conn->query($sql);
-    if ($result->num_rows > 0) {
-        // Loop pelos resultados e criar as opções
-        while ($row = $result->fetch_assoc()) {
-            echo "<option value='" . $row["id"] . "'>" . $row["nome"] . "</option>";
-        }
-    } else {
-        echo "<option value=''>Nenhuma disciplina encontrada</option>";
-    }
-    ?>
-</select>
-<br>
-<input type="date" class="form-control">
-<input type="submit" class="form-control btn btn-google" value="Mostrar Chamada" name="mostrar">
-                    </form>
-</div>
-                    <!-- Content Row -->
-                    <div class="row">
-                <?php
-                if(isset($_POST['mostrar'])){
-                    echo"<form method='post' action=''>
-                    
-                    
-                    </form>";
+            if ($result->num_rows > 0) {
+                // Loop pelos resultados e criar as opções
+                while ($row = $result->fetch_assoc()) {
+                    echo "<option value='" . $row["id"] . "'>" . $row["nome"] . "</option>";
                 }
-                ?>
+            } else {
+                echo "<option value=''>Nenhuma turma encontrada</option>";
+            }
+            ?>
+        </select>
+        <br>
+        <select id="disciplina" class="form-control" name="disciplina">
+            <option value="">Disciplina</option>
+            <?php
+            // Verificar se há resultados da consulta
+            $sql = "SELECT id, nome FROM Disciplina WHERE professor_id = '$_SESSION[id]'";
+            $result = $conn->query($sql);
+            if ($result->num_rows > 0) {
+                // Loop pelos resultados e criar as opções
+                while ($row = $result->fetch_assoc()) {
+                    echo "<option value='" . $row["id"] . "'>" . $row["nome"] . "</option>";
+                }
+            } else {
+                echo "<option value=''>Nenhuma disciplina encontrada</option>";
+            }
+            ?>
+        </select>
+        <br>
+        <input type="date" class="form-control" name="data">
+        <input type="submit" class="form-control btn btn-google" value="Mostrar Chamada" name="mostrar">
+    </div>
+</form>
+<!-- Content Row -->
+<div class="row">
+<?php
+if(isset($_POST['mostrar'])){
+    $disciplina_id = $_POST['disciplina'];
+    $turma = $_POST['turma'];
+    $data = $_POST['data'];
+    
+    $sql = "SELECT * FROM Aluno WHERE turma_id = '$turma' ORDER BY nome";
+    $result = $conn->query($sql);
+
+    if($result->num_rows > 0){
+        echo "<div class='table-responsive'>";
+        echo "<table class='table table-bordered' id='dataTable' width='100%' cellspacing='0'>";
+        echo "<thead><tr><th>Nome</th><th>Presença</th></tr></thead>";
+        echo "<tbody>";
+        echo "<form method='post' action=''>";
+
+        // Mostra os alunos da turma e as checkboxes correspondentes
+        while($row = $result->fetch_assoc()){
+            echo "<tr>";
+            echo "<td>".$row["nome"]."</td>";
+            echo "<td><input type='checkbox' class='input-group-text form-control' name='presente[]' value='".$row["id"]."'></td>";
+        }
+        
+        echo "</tr>";
+        echo "</tbody>";
+        echo "</table>";
+
+        echo "<input type='hidden' name='disciplina' value='".$disciplina_id."'>";
+        echo "<input type='hidden' name='turma' value='".$turma."'>";
+        echo "<input type='hidden' name='data' value='".$data."'>";
+        echo "<input type='submit' class='form-control btn-facebook' name='enviar'>";
+        echo "</form>";
+        echo "</div>";
+    }
+}
+
+if(isset($_POST['enviar'])){
+    $presentes = $_POST['presente'];
+    $disciplina_id = $_POST['disciplina'];
+    $turma_id = $_POST['turma'];
+    $data = $_POST['data'];
+
+    $alunos = []; // Array para armazenar todos os alunos da turma
+
+    // Obter todos os alunos da turma
+    $sqlAlunos = "SELECT id FROM Aluno WHERE turma_id = '$turma_id'";
+    $resultAlunos = $conn->query($sqlAlunos);
+
+    if ($resultAlunos->num_rows > 0) {
+        while ($row = $resultAlunos->fetch_assoc()) {
+            $alunos[] = $row['id'];
+        }
+    }
+
+    if (!empty($alunos)) {
+        $presencaValues = [];
+
+        foreach ($alunos as $aluno_id) {
+            $presente = in_array($aluno_id, $presentes) ? 1 : 0;
+            $presencaValues[] = "('$aluno_id', '$disciplina_id', '$turma_id', '$data', '$presente')";
+        }
+
+        $valuesString = implode(",", $presencaValues);
+
+        $sql = "INSERT INTO Presenca (aluno_id, disciplina_id, turma_id, data, presente) VALUES $valuesString";
+
+        if ($conn->query($sql) === TRUE) {
+            echo "Registros inseridos com sucesso!";
+        } else {
+            echo "Erro ao inserir os registros: " . $conn->error;
+        }
+    }
+}
+
+
+?>
+
 
 
                     </div>
