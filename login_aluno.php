@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Consulta de seleção de usuário com base no email
-    $sql = "SELECT id, nome, Email, senha FROM Aluno WHERE Email = '$email';";
+    $sql = "SELECT id, nome, Email, senha, turma_id FROM Aluno WHERE Email = '$email';";
     $result = $conn->query($sql);
 
     if (!$result) {
@@ -97,6 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['id'] = $row['id'];
                 $_SESSION['nome'] = $row['nome'];
                 $_SESSION['email'] = $row['Email'];
+                $_SESSION['turma'] = $row['turma_id'];
                 // Redireciona para a página de perfil
                 header('Location: index.php');
                 exit;

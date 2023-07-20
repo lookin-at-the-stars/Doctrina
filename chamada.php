@@ -471,7 +471,6 @@ if(isset($_POST['mostrar'])){
 }
 
 if(isset($_POST['enviar'])){
-    $presentes = $_POST['presente'];
     $disciplina_id = $_POST['disciplina'];
     $turma_id = $_POST['turma'];
     $data = $_POST['data'];
@@ -491,9 +490,18 @@ if(isset($_POST['enviar'])){
     if (!empty($alunos)) {
         $presencaValues = [];
 
-        foreach ($alunos as $aluno_id) {
-            $presente = in_array($aluno_id, $presentes) ? 1 : 0;
-            $presencaValues[] = "('$aluno_id', '$disciplina_id', '$turma_id', '$data', '$presente')";
+        if(isset($_POST['presente']) && is_array($_POST['presente'])) {
+            $presentes = $_POST['presente'];
+
+            foreach ($alunos as $aluno_id) {
+                $presente = in_array($aluno_id, $presentes) ? 1 : 0;
+                $presencaValues[] = "('$aluno_id', '$disciplina_id', '$turma_id', '$data', '$presente')";
+            }
+        } else {
+            // Se nenhum aluno tiver sido marcado, definimos todos como ausentes (0)
+            foreach ($alunos as $aluno_id) {
+                $presencaValues[] = "('$aluno_id', '$disciplina_id', '$turma_id', '$data', 0)";
+            }
         }
 
         $valuesString = implode(",", $presencaValues);

@@ -508,8 +508,92 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="align-items-center justify-content-between card-body">
+                                    <style>
+                                        .number {
+                                        position: absolute;
+                                        top: 0;
+                                        left: 0;
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                        color: mediumseagreen;
+                                        font-weight: 700;
+                                        padding-left: 6rem;
+                                        padding-top: 10rem;
+                                        @media (min-width:328px ) {
+                                        .number {
+                                            padding-top: 10rem;
+                                        }
+                                        
+}
+
+}
+
+                                        circle{
+                                            justify-content: center;
+                                            align-items: center;
+                                            width: 200px;
+                                            height: 200px;
+                                            fill: none;
+                                            stroke-width: 15;
+                                            transform: translate(7px, 5px);
+                                            stroke-dasharray: 440;
+                                            stroke-dashoffset: 440;
+                                            border-radius: 10px;
+                                        }
+                                        circle:nth-child(1){
+                                            stroke-dashoffset: 0;
+                                            stroke:#82031b;
+                                            transition: strokedasharray 2;
+                                        }
+                                        circle:nth-child(2){
+                                            stroke:#1cc88a;
+                                            transition: stroke-dashoffset 2;
+                                        }
+                                    </style>
+                                    <script>
+    fetch('puxapresenca.php')
+    .then(response => response.json())
+    .then(puxapresenca => {
+    const presencaAluno = puxapresenca['p.aluno'];
+    const presencaTurma = puxapresenca['p.turma'];
+    const presencaAbsoluta = puxapresenca['p.absoluta'];
+    console.log('Presença do aluno:', presencaAluno);
+    console.log('Presença da turma:', presencaTurma);
+    console.log('Presença absoluta:', presencaAbsoluta);
+    var circle = document.querySelector('#circleProgress');
+    var number = puxapresenca['p.absoluta'];
+    document.querySelector('.number').innerHTML = number + '%';
+    circle.style.strokeDashoffset = 440 - (440 * number) / 100;   
+    if(number < 75){
+        document.querySelector('.number').style.color =  "#e3051e";
+        document.querySelector('.number').style.fontWeight = "1200";
+    }   
+  })
+  .catch(error => {
+    // Tratar erros caso ocorram durante a solicitação
+    console.error('Ocorreu um erro:', error);
+  });
+
+                   
+    </script>
+                                    <svg class="card-body pt-4 pb-2">
+                                        <circle cx="70" cy="70" r="70"></circle>
+                                        <circle id="circleProgress" cx="70" cy="70" r="70"></circle>
+                                    </svg>
+                                    <div class="card-body number mr-2 "></div>
+                                    <div class="mt-4 text-center small">
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle text-primary"></i> Faltas
+                                        </span>
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle text-success"></i> Presença
+                                        </span>
+                                    </div>        
+                                </div>
                                 <!-- Card Body -->
-                                <div class="card-body">
+                <!--                <div class="card-body">
                                     <div class="chart-pie pt-4 pb-2">
                                         <canvas id="myPieChart"></canvas>
                                     </div>
@@ -524,7 +608,7 @@
                                             <i class="fas fa-circle text-info"></i> Referral
                                         </span>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    fetch('puxapresenca.php')
+  .then(response => response.json())
+  .then(data => {
+    // Aqui você pode manipular os dados recebidos do PHP
+    console.log(data);
+
+    // Atribuindo os valores do objeto JSON a variáveis separadas
+    const nome = data.nome;
+    const idade = data.idade;
+    const profissao = data.profissao;
+
+    // Exibindo as variáveis separadas
+    console.log(nome);
+    console.log(idade);
+    console.log(profissao);
+  })
+  .catch(error => {
+    // Trate erros caso ocorram durante a solicitação
+    console.error('Ocorreu um erro:', error);
+  });
+
+</script>
+</body>
+</html>
