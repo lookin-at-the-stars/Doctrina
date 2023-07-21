@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" type="image/png" href="/Doctrina/icone.png">
+    <link rel="icon" type="image/png" href="/Doctrina/icones.png">
 
     <title>Doctrina- Inicio</title>
 
