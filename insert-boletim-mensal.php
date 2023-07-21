@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 
 <head>
 
@@ -8,9 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" type="image/png" href="/Doctrina/icones.png">
+    <link rel="icon" type="image/png" href="/Doctrina/icone.png">
 
-    <title>Doctrina- Professor</title>
+    <title>Doctrina- Inicio</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -21,14 +21,18 @@
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <?php session_start();
-    if(!isset($_SESSION['nome'])){
-        header('Location: login.html');}
-            // Conexão com o banco de dados
-            $conn = new mysqli("localhost", "root", "", "Doctrina");
-    
-            if ($conn->connect_error) {
-                die("Erro de conexão: " . $conn->connect_error);
-            }?>
+    include "conexao.php";
+    $conn = new mysqli("localhost", "root", "", "Doctrina");
+    if ($conn->connect_error) {
+        die("Erro de conexão: " . $conn->connect_error);
+    }
+    // Verifica se o aluno está autenticado
+    if (!isset($_SESSION['id'])) {
+      // Redireciona para a página de login caso não esteja autenticado
+      header("Location: login.html");
+      exit();
+    }
+    ?>
 </head>
 
 <body id="page-top">
@@ -49,14 +53,12 @@
             <div class="sidebar-brand-text mx-0.75"><img src="/Doctrina/img/octrina-branco.png" alt="" style="height: 1.58rem; width: 6.6rem;"></div>
             <!--<div class="sidebar-brand-text mx-3" style="font-size: 24px;">Doctrina</div>-->
             </a>
-            
 
-            <!-- Divider -->
             <hr class="sidebar-divider my-0">
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item">
-                <a class="nav-link" href="index-professor.php">
+                <a class="nav-link" href="index.php">
                     <i class="fas fa-fw fa-house-user" style="font-weight: bold;"></i>
                     <span>Início</span></a>
             </li>
@@ -111,7 +113,7 @@
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
                     aria-expanded="true" aria-controls="collapsePages">
                     <i class="fas fa-fw fa-mail-bulk"></i>
@@ -127,6 +129,7 @@
                         <h6 class="collapse-header">Boletins</h6>
                         <a class="collapse-item" href="insert-boletim-mensal.php">Inserir notas mensais</a>
                         <a class="collapse-item" href="404.html">Inserir notas bimestral</a>
+                        
                     </div>
                 </div>
             </li>
@@ -146,7 +149,7 @@
             </li>
 
             <!-- Nav Item - Registro de Aula -->
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="chamada.php">
                     <i class="fas fa-fw fa-chalkboard-teacher"></i>
                     <span>Registro de Aula</span></a>
@@ -378,11 +381,27 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
+                <div class="container-fluid" style="background-color: #ffeecb;">
+
+
+                <!-- Begin Page Content -->
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-1 text-gray-800">Registro de Aula</h1>
-<form action="" method="post">
+                    <h1 class="h3 mb-4 text-gray-800">Boletim - Mensal</h1>
+
+                </div>
+                <!-- /.container-fluid -->
+                <div class="container-fluid">
+                <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary"><?php 
+                                echo $_SESSION['nome'];
+                                ?></h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                            <form action="" method="post">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <select id="turma" class="form-control" name="turma">
             <option value="">Turma</option>
@@ -427,104 +446,76 @@
             ?>
         </select>
         <br>
-        <input type="date" class="form-control" name="data">
-        <input type="submit" class="form-control btn btn-google" value="Mostrar Chamada" name="mostrar">
-    </div>
-</form>
-<!-- Content Row -->
-<div class="row">
-<?php
-if(isset($_POST['mostrar'])){
+        <select id="disciplina" class="form-control" name="bimestre">
+        <option value="">Bimestre</option>
+        <option value="1">1 Bimestre</option>
+        <option value="2">2 Bimestre</option>
+        <option value="3">3 Bimestre</option>
+        <option value="4">4 Bimestre</option>
+
+        <input type="submit" class="form-control btn btn-google" value="Mostrar" name="mostrar">
+        </form>  
+        </div>
+        <?php
+if (isset($_POST['mostrar'])) {
+    $turma_id = $_POST['turma'];
     $disciplina_id = $_POST['disciplina'];
-    $turma = $_POST['turma'];
-    $data = $_POST['data'];
-    
-    $sql = "SELECT * FROM Aluno WHERE turma_id = '$turma' ORDER BY nome";
+    $bimestre = $_POST['bimestre'];
+
+    $sql = "SELECT a.id, a.nome, 
+                   n1.nota AS prova1, 
+                   n2.nota AS prova2, 
+                   n3.nota AS trabalho, 
+                   n4.nota AS atividade 
+            FROM Aluno a 
+            LEFT JOIN Nota n1 ON a.id = n1.aluno_id AND n1.tipo_id = 1 AND n1.bim = $bimestre AND n1.disciplina_id = $disciplina_id
+            LEFT JOIN Nota n2 ON a.id = n2.aluno_id AND n2.tipo_id = 2 AND n2.bim = $bimestre AND n2.disciplina_id = $disciplina_id
+            LEFT JOIN Nota n3 ON a.id = n3.aluno_id AND n3.tipo_id = 3 AND n3.bim = $bimestre AND n3.disciplina_id = $disciplina_id
+            LEFT JOIN Nota n4 ON a.id = n4.aluno_id AND n4.tipo_id = 4 AND n4.bim = $bimestre AND n4.disciplina_id = $disciplina_id
+            WHERE a.turma_id = $turma_id";
+
     $result = $conn->query($sql);
 
-    if($result->num_rows > 0){
-        echo "<div class='table-responsive'>";
-        echo "<table class='table table-bordered' id='dataTable' width='100%' cellspacing='0'>";
-        echo "<thead><tr><th>Nome</th><th>Presença</th></tr></thead>";
-        echo "<tbody>";
-        echo "<form method='post' action=''>";
+    // Exibe o formulário com a tabela dentro
+    echo "<form action='' method='post'>";
+    echo "<table class='table table-bordered' id='dataTable' width='100%' cellspacing='0'>";
+    echo "<thead><tr><th>Nome</th><th>Prova 1</th><th>Prova 2</th><th>Trabalho</th><th>Atividade</th></tr></thead>";
+    echo "<tbody>";
 
-        // Mostra os alunos da turma e as checkboxes correspondentes
-        while($row = $result->fetch_assoc()){
+    // Verifica se houve algum erro na consulta
+    if ($result === false) {
+        echo "Erro na consulta: " . $conn->error;
+    } else {
+        while ($row = $result->fetch_assoc()) {
             echo "<tr>";
-            echo "<td>".$row["nome"]."</td>";
-            echo "<td><input type='checkbox' class='input-group-text form-control' name='presente[]' value='".$row["id"]."'></td>";
+            echo "<td>" . htmlspecialchars($row['nome']) . "</td>";
+            echo "<td><input type='text' name='prova1' class='form-control' value='" . (isset($row['prova1']) ? htmlspecialchars($row['prova1']) : "") . "'></td>";
+            echo "<td><input type='text' name='prova2' class='form-control' value='" . (isset($row['prova2']) ? htmlspecialchars($row['prova2']) : "") . "'></td>";
+            echo "<td><input type='text' name='trabalho' class='form-control' value='" . (isset($row['trabalho']) ? htmlspecialchars($row['trabalho']) : "") . "'></td>";
+            echo "<td><input type='text' name='atividade' class='form-control' value='" . (isset($row['atividade']) ? htmlspecialchars($row['atividade']) : "") . "'></td>";
+            echo "</tr>";
         }
-        
-        echo "</tr>";
-        echo "</tbody>";
-        echo "</table>";
-
-        echo "<input type='hidden' name='disciplina' value='".$disciplina_id."'>";
-        echo "<input type='hidden' name='turma' value='".$turma."'>";
-        echo "<input type='hidden' name='data' value='".$data."'>";
-        echo "<input type='submit' class='form-control btn-facebook' name='enviar'>";
-        echo "</form>";
-        echo "</div>";
     }
+    echo "</tbody>";
+    echo "</table>";
+    echo "<input type='submit' class='btn btn-facebook' value='Salvar Notas' name='salvar_notas'>";
+    echo "</form>";
 }
-
-if(isset($_POST['enviar'])){
-    $disciplina_id = $_POST['disciplina'];
-    $turma_id = $_POST['turma'];
-    $data = $_POST['data'];
-
-    $alunos = []; // Array para armazenar todos os alunos da turma
-
-    // Obter todos os alunos da turma
-    $sqlAlunos = "SELECT id FROM Aluno WHERE turma_id = '$turma_id'";
-    $resultAlunos = $conn->query($sqlAlunos);
-
-    if ($resultAlunos->num_rows > 0) {
-        while ($row = $resultAlunos->fetch_assoc()) {
-            $alunos[] = $row['id'];
-        }
-    }
-
-    if (!empty($alunos)) {
-        $presencaValues = [];
-
-        if(isset($_POST['presente']) && is_array($_POST['presente'])) {
-            $presentes = $_POST['presente'];
-
-            foreach ($alunos as $aluno_id) {
-                $presente = in_array($aluno_id, $presentes) ? 1 : 0;
-                $presencaValues[] = "('$aluno_id', '$disciplina_id', '$turma_id', '$data', '$presente')";
-            }
-        } else {
-            // Se nenhum aluno tiver sido marcado, definimos todos como ausentes (0)
-            foreach ($alunos as $aluno_id) {
-                $presencaValues[] = "('$aluno_id', '$disciplina_id', '$turma_id', '$data', 0)";
-            }
-        }
-
-        $valuesString = implode(",", $presencaValues);
-
-        $sql = "INSERT INTO Presenca (aluno_id, disciplina_id, turma_id, data, presente) VALUES $valuesString";
-
-        if ($conn->query($sql) === TRUE) {
-            echo "Registros inseridos com sucesso!";
-        } else {
-            echo "Erro ao inserir os registros: " . $conn->error;
-        }
-    }
-}
-
-
 ?>
 
 
 
+
+
+
+
+    
+                            
+                            </div>
+                        </div>
                     </div>
 
-                </div>
-                <!-- /.container-fluid -->
-
+                </div>    
             </div>
             <!-- End of Main Content -->
 
@@ -532,7 +523,7 @@ if(isset($_POST['enviar'])){
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Your Website 2020</span>
+                        <span>Copyright &copy; Doctrina 2023</span>
                     </div>
                 </div>
             </footer>

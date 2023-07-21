@@ -119,7 +119,7 @@
                         <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
                         <div class="collapse-divider"></div> -->
                         <h6 class="collapse-header">Boletins</h6>
-                        <a class="collapse-item" href="blank.php">Inserir notas mensais</a>
+                        <a class="collapse-item" href="insert-boletim-mensal.php">Inserir notas mensais</a>
                         <a class="collapse-item" href="404.html">Inserir notas bimestral</a>
                         
                     </div>

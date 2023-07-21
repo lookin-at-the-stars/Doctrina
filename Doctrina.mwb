@@ -54,6 +54,7 @@ CREATE TABLE Nota (
   disciplina_id INT NOT NULL,
   nota FLOAT NOT NULL,
   tipo_id int NOT NULL,
+  bim int NOT NULL,
   FOREIGN KEY (aluno_id) REFERENCES Aluno(id),
   FOREIGN KEY (disciplina_id) REFERENCES Disciplina(id)
 );
@@ -137,3 +138,5 @@ select * from presenca;
 
 ALTER TABLE Nota
 ADD COLUMN tipo_id INT NOT NULL;
+ALTER TABLE Nota
+ADD COLUMN bim INT NOT NULL;
