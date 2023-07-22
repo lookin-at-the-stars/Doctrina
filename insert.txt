@@ -1,0 +1,175 @@
+<div class="card-body">
+    <div class="table-responsive">
+        <form action="" method="post">
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <select id="turma" class="form-control" name="turma">
+                    <option value="">Turma</option>
+                    <?php
+                    // Código para exibir as opções de turma
+                    ?>
+                </select>
+                <br>
+                <select id="disciplina" class="form-control" name="disciplina">
+                    <option value="">Disciplina</option>
+                    <?php
+                    // Código para exibir as opções de disciplina
+                    ?>
+                </select>
+                <br>
+                <select id="bimestre" class="form-control" name="bimestre">
+                    <option value="">Bimestre</option>
+                    <option value="1">1 Bimestre</option>
+                    <option value="2">2 Bimestre</option>
+                    <option value="3">3 Bimestre</option>
+                    <option value="4">4 Bimestre</option>
+                </select>
+                <input type="submit" class="form-control btn btn-google" value="Mostrar" name="mostrar">
+            </div>
+        </form>
+    </div>
+</div>
+
+<?php
+if (isset($_POST['mostrar'])) {
+    $turma_id = $_POST['turma'];
+    $disciplina_id = $_POST['disciplina'];
+    $bimestre = $_POST['bimestre'];
+
+    $sql = "SELECT a.id, a.nome, 
+                   n1.nota AS prova1, 
+                   n2.nota AS prova2, 
+                   n3.nota AS trabalho, 
+                   n4.nota AS atividade 
+            FROM Aluno a 
+            LEFT JOIN Nota n1 ON a.id = n1.aluno_id AND n1.tipo_id = 1 AND n1.bim = $bimestre AND n1.disciplina_id = $disciplina_id
+            LEFT JOIN Nota n2 ON a.id = n2.aluno_id AND n2.tipo_id = 2 AND n2.bim = $bimestre AND n2.disciplina_id = $disciplina_id
+            LEFT JOIN Nota n3 ON a.id = n3.aluno_id AND n3.tipo_id = 3 AND n3.bim = $bimestre AND n3.disciplina_id = $disciplina_id
+            LEFT JOIN Nota n4 ON a.id = n4.aluno_id AND n4.tipo_id = 4 AND n4.bim = $bimestre AND n4.disciplina_id = $disciplina_id
+            WHERE a.turma_id = $turma_id";
+
+    $result = $conn->query($sql);
+
+    echo "<form action='' method='post'>";
+    echo "<table class='table table-bordered' id='dataTable' width='100%' cellspacing='0'>";
+    echo "<thead><tr><th>Nome</th><th>Prova 1</th><th>Prova 2</th><th>Trabalho</th><th>Atividade</th></tr></thead>";
+    echo "<tbody>";
+
+    if ($result === false) {
+        echo "Erro na consulta: " . $conn->error;
+    } else {
+        while ($row = $result->fetch_assoc()) {
+            echo "<tr>";
+            echo "<td>" . htmlspecialchars($row['nome']) . "</td>";
+            echo "<td><input type='text' name='prova1[]' class='form-control' value='" . (isset($row['prova1']) ? htmlspecialchars($row['prova1']) : "") . "'></td>";
+            echo "<td><input type='text' name='prova2[]' class='form-control' value='" . (isset($row['prova2']) ? htmlspecialchars($row['prova2']) : "") . "'></td>";
+            echo "<td><input type='text' name='trabalho[]' class='form-control' value='" . (isset($row['trabalho']) ? htmlspecialchars($row['trabalho']) : "") . "'></td>";
+            echo "<td><input type='text' name='atividade[]' class='form-control' value='" . (isset($row['atividade']) ? htmlspecialchars($row['atividade']) : "") . "'></td>";
+            echo "<input type='hidden' name='aluno_id[]' value='" . $row['id'] . "'>";
+            echo "<input type='hidden' name='disciplina_id[]' value='" . $disciplina_id . "'>";
+            echo "<input type='hidden' name='bimestre' value='" . $bimestre . "'>";
+            echo "</tr>";
+        }
+    }
+
+    echo "</tbody>";
+    echo "</table>";
+    echo "<input type='submit' class='btn btn-facebook' value='Salvar Notas' name='salvar_notas'>";
+    echo "</form>";
+}
+
+if (isset($_POST['salvar_notas'])) {
+    if (isset($_POST['prova1']) && is_array($_POST['prova1'])) {
+        $alteracaoDetectada = false;
+        foreach ($_POST['prova1'] as $key => $prova1) {
+            $prova2 = $_POST['prova2'][$key];
+            $trabalho = $_POST['trabalho'][$key];
+            $atividade = $_POST['atividade'][$key];
+            $aluno_id = $_POST['aluno_id'][$key];
+            $disciplina_id = $_POST['disciplina_id'][$key];
+            $bimestre = $_POST['bimestre'];
+
+            $update_sql = "UPDATE Nota 
+                           SET nota = CASE tipo_id 
+                                        WHEN 1 THEN $prova1
+                                        WHEN 2 THEN $prova2
+                                        WHEN 3 THEN $trabalho
+                                        WHEN 4 THEN $atividade
+                                   END 
+                           WHERE aluno_id = $aluno_id 
+                           AND disciplina_id = $disciplina_id 
+                           AND bim = $bimestre";
+
+            $insert_sql = "INSERT INTO Nota (aluno_id, disciplina_id, nota, tipo_id, bim) 
+                           VALUES ($aluno_id, $disciplina_id, ?, ?, $bimestre) 
+                           ON DUPLICATE KEY UPDATE nota = VALUES(nota)";
+
+            $stmt = $conn->prepare($insert_sql);
+            $stmt->bind_param("dd", $nota, $tipo_id);
+
+            if (empty($prova1)) {
+                $delete_sql = "DELETE FROM Nota 
+                               WHERE aluno_id = $aluno_id 
+                               AND disciplina_id = $disciplina_id 
+                               AND tipo_id = 1 
+                               AND bim = $bimestre";
+                $conn->query($delete_sql);
+            } else {
+                $nota = $prova1;
+                $tipo_id = 1;
+                $stmt->execute();
+            }
+
+            if (empty($prova2)) {
+                $delete_sql = "DELETE FROM Nota 
+                               WHERE aluno_id = $aluno_id 
+                               AND disciplina_id = $disciplina_id 
+                               AND tipo_id = 2 
+                               AND bim = $bimestre";
+                $conn->query($delete_sql);
+            } else {
+                $nota = $prova2;
+                $tipo_id = 2;
+                $stmt->execute();
+            }
+
+            if (empty($trabalho)) {
+                $delete_sql = "DELETE FROM Nota 
+                               WHERE aluno_id = $aluno_id 
+                               AND disciplina_id = $disciplina_id 
+                               AND tipo_id = 3 
+                               AND bim = $bimestre";
+                $conn->query($delete_sql);
+            } else {
+                $nota = $trabalho;
+                $tipo_id = 3;
+                $stmt->execute();
+            }
+
+            if (empty($atividade)) {
+                $delete_sql = "DELETE FROM Nota 
+                               WHERE aluno_id = $aluno_id 
+                               AND disciplina_id = $disciplina_id 
+                               AND tipo_id = 4 
+                               AND bim = $bimestre";
+                $conn->query($delete_sql);
+            } else {
+                $nota = $atividade;
+                $tipo_id = 4;
+                $stmt->execute();
+            }
+
+            if (!$alteracaoDetectada && (is_numeric($prova1) || is_numeric($prova2) || is_numeric($trabalho) || is_numeric($atividade))) {
+                $alteracaoDetectada = true;
+            }
+        }
+
+        if ($alteracaoDetectada) {
+            echo "Notas salvas com sucesso!";
+        } else {
+            echo "Nenhuma alteração de nota detectada.";
+        }
+    } else {
+        echo "Nenhum dado de notas foi enviado no formulário.";
+    }
+}
+?>

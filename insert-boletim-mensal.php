@@ -400,63 +400,62 @@
                                 ?></h6>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
-                            <form action="" method="post">
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <select id="turma" class="form-control" name="turma">
-            <option value="">Turma</option>
-            <?php
-            // Verificar se há resultados da consulta
-            $sql = "SELECT DISTINCT t.id, t.nome 
-                    FROM Turma t 
-                    INNER JOIN Disciplina d ON t.id = d.turma_id 
-                    INNER JOIN Professor p ON d.professor_id = p.id 
-                    WHERE p.id = ?";
-            
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("i", $_SESSION['id']); // Substitua $_SESSION['id'] pelo nome correto da variável de sessão que armazena o ID do professor logado
-            $stmt->execute();
-            $result = $stmt->get_result();
+    <div class="table-responsive">
+        <form action="" method="post">
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <select id="turma" class="form-control" name="turma">
+                    <option value="">Turma</option>
+                    <?php
+                    $sql = "SELECT DISTINCT t.id, t.nome 
+                            FROM Turma t 
+                            INNER JOIN Disciplina d ON t.id = d.turma_id 
+                            INNER JOIN Professor p ON d.professor_id = p.id 
+                            WHERE p.id = ?";
+                    
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("i", $_SESSION['id']); // Substitua $_SESSION['id'] pelo nome correto da variável de sessão que armazena o ID do professor logado
+                    $stmt->execute();
+                    $result = $stmt->get_result();
 
-            if ($result->num_rows > 0) {
-                // Loop pelos resultados e criar as opções
-                while ($row = $result->fetch_assoc()) {
-                    echo "<option value='" . $row["id"] . "'>" . $row["nome"] . "</option>";
-                }
-            } else {
-                echo "<option value=''>Nenhuma turma encontrada</option>";
-            }
-            ?>
-        </select>
-        <br>
-        <select id="disciplina" class="form-control" name="disciplina">
-            <option value="">Disciplina</option>
-            <?php
-            // Verificar se há resultados da consulta
-            $sql = "SELECT id, nome FROM Disciplina WHERE professor_id = '$_SESSION[id]'";
-            $result = $conn->query($sql);
-            if ($result->num_rows > 0) {
-                // Loop pelos resultados e criar as opções
-                while ($row = $result->fetch_assoc()) {
-                    echo "<option value='" . $row["id"] . "'>" . $row["nome"] . "</option>";
-                }
-            } else {
-                echo "<option value=''>Nenhuma disciplina encontrada</option>";
-            }
-            ?>
-        </select>
-        <br>
-        <select id="disciplina" class="form-control" name="bimestre">
-        <option value="">Bimestre</option>
-        <option value="1">1 Bimestre</option>
-        <option value="2">2 Bimestre</option>
-        <option value="3">3 Bimestre</option>
-        <option value="4">4 Bimestre</option>
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<option value='" . $row["id"] . "'>" . $row["nome"] . "</option>";
+                        }
+                    } else {
+                        echo "<option value=''>Nenhuma turma encontrada</option>";
+                    }
+                    ?>
+                </select>
+                <br>
+                <select id="disciplina" class="form-control" name="disciplina">
+                    <option value="">Disciplina</option>
+                    <?php
+                    $sql = "SELECT id, nome FROM Disciplina WHERE professor_id = '$_SESSION[id]'";
+                    $result = $conn->query($sql);
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<option value='" . $row["id"] . "'>" . $row["nome"] . "</option>";
+                        }
+                    } else {
+                        echo "<option value=''>Nenhuma disciplina encontrada</option>";
+                    }
+                    ?>
+                </select>
+                <br>
+                <select id="bimestre" class="form-control" name="bimestre">
+                    <option value="">Bimestre</option>
+                    <option value="1">1 Bimestre</option>
+                    <option value="2">2 Bimestre</option>
+                    <option value="3">3 Bimestre</option>
+                    <option value="4">4 Bimestre</option>
+                </select>
+                <input type="submit" class="form-control btn btn-google" value="Mostrar" name="mostrar">
+            </div>
+        </form>
+    </div>
+</div>
 
-        <input type="submit" class="form-control btn btn-google" value="Mostrar" name="mostrar">
-        </form>  
-        </div>
-        <?php
+<?php
 if (isset($_POST['mostrar'])) {
     $turma_id = $_POST['turma'];
     $disciplina_id = $_POST['disciplina'];
@@ -476,32 +475,115 @@ if (isset($_POST['mostrar'])) {
 
     $result = $conn->query($sql);
 
-    // Exibe o formulário com a tabela dentro
     echo "<form action='' method='post'>";
     echo "<table class='table table-bordered' id='dataTable' width='100%' cellspacing='0'>";
     echo "<thead><tr><th>Nome</th><th>Prova 1</th><th>Prova 2</th><th>Trabalho</th><th>Atividade</th></tr></thead>";
     echo "<tbody>";
 
-    // Verifica se houve algum erro na consulta
     if ($result === false) {
         echo "Erro na consulta: " . $conn->error;
     } else {
         while ($row = $result->fetch_assoc()) {
             echo "<tr>";
             echo "<td>" . htmlspecialchars($row['nome']) . "</td>";
-            echo "<td><input type='text' name='prova1' class='form-control' value='" . (isset($row['prova1']) ? htmlspecialchars($row['prova1']) : "") . "'></td>";
-            echo "<td><input type='text' name='prova2' class='form-control' value='" . (isset($row['prova2']) ? htmlspecialchars($row['prova2']) : "") . "'></td>";
-            echo "<td><input type='text' name='trabalho' class='form-control' value='" . (isset($row['trabalho']) ? htmlspecialchars($row['trabalho']) : "") . "'></td>";
-            echo "<td><input type='text' name='atividade' class='form-control' value='" . (isset($row['atividade']) ? htmlspecialchars($row['atividade']) : "") . "'></td>";
+            echo "<td><input type='text' name='prova1[]' class='form-control' value='" . (isset($row['prova1']) ? htmlspecialchars($row['prova1']) : "") . "'></td>";
+            echo "<td><input type='text' name='prova2[]' class='form-control' value='" . (isset($row['prova2']) ? htmlspecialchars($row['prova2']) : "") . "'></td>";
+            echo "<td><input type='text' name='trabalho[]' class='form-control' value='" . (isset($row['trabalho']) ? htmlspecialchars($row['trabalho']) : "") . "'></td>";
+            echo "<td><input type='text' name='atividade[]' class='form-control' value='" . (isset($row['atividade']) ? htmlspecialchars($row['atividade']) : "") . "'></td>";
+            echo "<input type='hidden' name='aluno_id[]' value='" . $row['id'] . "'>";
+            echo "<input type='hidden' name='disciplina_id[]' value='" . $disciplina_id . "'>";
+            echo "<input type='hidden' name='bimestre' value='" . $bimestre . "'>";
             echo "</tr>";
         }
     }
+
     echo "</tbody>";
     echo "</table>";
     echo "<input type='submit' class='btn btn-facebook' value='Salvar Notas' name='salvar_notas'>";
     echo "</form>";
 }
+
+// Verificar se a conexão foi estabelecida corretamente
+if ($conn->connect_error) {
+    die("Falha na conexão: " . $conn->connect_error);
+}
+
+if (isset($_POST['salvar_notas'])) {
+    if (isset($_POST['prova1']) && is_array($_POST['prova1'])) {
+        $alteracaoDetectada = false;
+        $stmtInsert = $conn->prepare("INSERT INTO Nota (aluno_id, disciplina_id, nota, tipo_id, bim) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE nota = VALUES(nota)");
+        $stmtDelete = $conn->prepare("DELETE FROM Nota WHERE aluno_id = ? AND disciplina_id = ? AND tipo_id = ? AND bim = ?");
+
+        foreach ($_POST['prova1'] as $key => $prova1) {
+            $prova2 = $_POST['prova2'][$key];
+            $trabalho = $_POST['trabalho'][$key];
+            $atividade = $_POST['atividade'][$key];
+            $aluno_id = $_POST['aluno_id'][$key];
+            $disciplina_id = $_POST['disciplina_id'];
+            $bimestre = $_POST['bimestre'];
+
+            // Repetir o procedimento para o campo "prova1"
+            if (!empty($prova1)) {
+                $tipo_id = 1;
+                $stmtInsert->bind_param("iidii", $aluno_id, $disciplina_id, $prova1, $tipo_id, $bimestre);
+                $stmtInsert->execute();
+                $alteracaoDetectada = true;
+            } else {
+                $tipo_id = 1;
+                $stmtDelete->bind_param("iiii", $aluno_id, $disciplina_id, $tipo_id, $bimestre);
+                $stmtDelete->execute();
+            }
+
+            // Repetir o procedimento para o campo "prova2"
+            if (!empty($prova2)) {
+                $tipo_id = 2;
+                $stmtInsert->bind_param("iidii", $aluno_id, $disciplina_id, $prova2, $tipo_id, $bimestre);
+                $stmtInsert->execute();
+                $alteracaoDetectada = true;
+            } else {
+                $tipo_id = 2;
+                $stmtDelete->bind_param("iiii", $aluno_id, $disciplina_id, $tipo_id, $bimestre);
+                $stmtDelete->execute();
+            }
+
+            // Repetir o procedimento para o campo "trabalho"
+            if (!empty($trabalho)) {
+                $tipo_id = 3;
+                $stmtInsert->bind_param("iidii", $aluno_id, $disciplina_id, $trabalho, $tipo_id, $bimestre);
+                $stmtInsert->execute();
+                $alteracaoDetectada = true;
+            } else {
+                $tipo_id = 3;
+                $stmtDelete->bind_param("iiii", $aluno_id, $disciplina_id, $tipo_id, $bimestre);
+                $stmtDelete->execute();
+            }
+
+            // Repetir o procedimento para o campo "atividade"
+            if (!empty($atividade)) {
+                $tipo_id = 4;
+                $stmtInsert->bind_param("iidii", $aluno_id, $disciplina_id, $atividade, $tipo_id, $bimestre);
+                $stmtInsert->execute();
+                $alteracaoDetectada = true;
+            } else {
+                $tipo_id = 4;
+                $stmtDelete->bind_param("iiii", $aluno_id, $disciplina_id, $tipo_id, $bimestre);
+                $stmtDelete->execute();
+            }
+        }
+
+        if ($alteracaoDetectada) {
+            echo "Notas salvas com sucesso!";
+        } else {
+            echo "Nenhuma alteração de nota detectada.";
+        }
+    } else {
+        echo "Nenhum dado de notas foi enviado no formulário.";
+    }
+}
+
 ?>
+
+                </div>
 
 
 

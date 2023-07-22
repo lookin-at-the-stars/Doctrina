@@ -1,0 +1,38 @@
+<select id="turma" class="form-control" name="turma">
+                    <option value="">Turma</option>
+                    <?php
+                    $sql = "SELECT DISTINCT t.id, t.nome 
+                            FROM Turma t 
+                            INNER JOIN Disciplina d ON t.id = d.turma_id 
+                            INNER JOIN Professor p ON d.professor_id = p.id 
+                            WHERE p.id = ?";
+                    
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("i", $_SESSION['id']); // Substitua $_SESSION['id'] pelo nome correto da variável de sessão que armazena o ID do professor logado
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<option value='" . $row["id"] . "'>" . $row["nome"] . "</option>";
+                        }
+                    } else {
+                        echo "<option value=''>Nenhuma turma encontrada</option>";
+                    }
+                    ?>
+                </select>
+                <br>
+                <select id="disciplina" class="form-control" name="disciplina">
+                    <option value="">Disciplina</option>
+                    <?php
+                    $sql = "SELECT id, nome FROM Disciplina WHERE professor_id = '$_SESSION[id]'";
+                    $result = $conn->query($sql);
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<option value='" . $row["id"] . "'>" . $row["nome"] . "</option>";
+                        }
+                    } else {
+                        echo "<option value=''>Nenhuma disciplina encontrada</option>";
+                    }
+                    ?>
+                </select>
