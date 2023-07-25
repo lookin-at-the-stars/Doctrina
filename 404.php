@@ -391,167 +391,73 @@
                             <h6 class="m-0 font-weight-bold text-primary"><?php 
                                 echo $_SESSION['nome'];
                                 ?></h6>
-                                    <form method="post">
-        <label class="h7 mb-2" for="bimestre">Selecione o bimestre:</label>
-        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <!-- Campo select para selecionar o bimestre -->
-        <select class="form-control" name="bimestre" id="bimestre">
-            <option value="0">Selecione o Bimestre</option>
-            <option value="1">1º Bimestre</option>
-            <option value="2">2º Bimestre</option>
-            <option value="3">3º Bimestre</option>
-            <option value="4">4º Bimestre</option>
-        </select>
-        
-
-        <!-- Botão de submit para filtrar as notas -->
-        <input type="submit" name="selecionar" class="form-control" value="Selecionar">
-    </form>
-    </div>
+<div class="card-body">
                         </div>
                         <?php
-$aluno_id = $_SESSION['id'];
+                        $aluno_id = $_SESSION['id'];
 
-if (isset($_POST['selecionar']) && $_POST['selecionar'] !== 0) {
-    $bimestre = $_POST['bimestre'];
+// Verifica se o formulário foi enviado (se o botão "Selecionar" foi pressionado)
+
     $turma_id = $_SESSION['turma'];
-
-    // Consulta para buscar todas as disciplinas da turma selecionada pelo aluno
-    $sql_disciplinas = "SELECT id, nome FROM Disciplina WHERE turma_id = $turma_id";
-    $result_disciplinas = $conn->query($sql_disciplinas);
 
     // Criar um array para armazenar todas as disciplinas da turma
     $disciplinas = array();
-    while ($row = $result_disciplinas->fetch_assoc()) {
-        $disciplinas[] = $row;
-    }
 
-    // Inicializar o array $notas_por_disciplina com chaves para todas as disciplinas
-    $notas_por_disciplina = array();
-    foreach ($disciplinas as $disciplina_info) {
-        $disciplina = $disciplina_info['nome'];
-        $notas_por_disciplina[$disciplina] = array(
-            'prova1' => null,
-            'prova2' => null,
-            'trabalho' => null,
-            'atividade' => null,
-            'media' => null
-        );
-    }
+    // Criar um array para armazenar as notas e médias de cada disciplina para os bimestres
+    $notas_e_medias = array();
 
-    // Consulta para buscar as notas do aluno para o bimestre especificado
-    $sql_notas = "SELECT Disciplina.nome AS disciplina, Nota.tipo_id, Nota.nota
-                  FROM Disciplina
-                  LEFT JOIN Nota ON Disciplina.id = Nota.disciplina_id AND Nota.aluno_id = $aluno_id AND Nota.bim = $bimestre
-                  WHERE Disciplina.turma_id = $turma_id";
-    $result_notas = $conn->query($sql_notas);
+    // Loop para calcular as médias para cada bimestre
+    for ($bimestre = 1; $bimestre <= 4; $bimestre++) {
+        // Consulta para buscar as notas do aluno para cada disciplina e bimestre
+        $sql_notas = "SELECT Disciplina.nome AS disciplina, SUM(Nota.nota) AS soma_notas
+                      FROM Nota
+                      RIGHT JOIN Disciplina ON Nota.disciplina_id = Disciplina.id
+                      WHERE Nota.aluno_id = $aluno_id AND Nota.bim = $bimestre AND Disciplina.turma_id = $turma_id
+                      GROUP BY disciplina";
+        $result_notas = $conn->query($sql_notas);
 
-    // Verificar se há dados de notas antes de continuar
-    if ($result_notas && $result_notas->num_rows > 0) {
-        // Preencher o array $notas_por_disciplina com as notas encontradas
+        // Preencher o array de disciplinas caso ainda não esteja preenchido
+        if (empty($disciplinas)) {
+            while ($row = $result_notas->fetch_assoc()) {
+                $disciplinas[] = $row['disciplina'];
+            }
+        }
+
+        // Preencher o array de notas e médias
         while ($row = $result_notas->fetch_assoc()) {
             $disciplina = $row['disciplina'];
-            $tipo_id = $row['tipo_id'];
-            $nota = $row['nota'];
+            $soma_notas = $row['soma_notas'];
 
-            if (isset($notas_por_disciplina[$disciplina][$tipo_id])) {
-                $notas_por_disciplina[$disciplina][$tipo_id] = $nota;
-            }
+            // Adiciona a soma das notas do bimestre para a disciplina correspondente
+            $notas_e_medias[$disciplina][$bimestre] = $soma_notas;
         }
     }
 
-    // Calcula a média aritmética das notas para cada disciplina
-    foreach ($notas_por_disciplina as $disciplina => $notas) {
-        $notas = array_filter($notas, function ($nota) {
-            return $nota !== null;
-        });
-
-        $media = count($notas) > 0 ? array_sum($notas) / count($notas) : null;
-        $notas_por_disciplina[$disciplina]['media'] = $media;
+    // Exibe os bimestres (1º Bimestre, 2º Bimestre, ..., 4º Bimestre)
+    echo "<div class='card-body'><div class='table-responsive'>";
+    echo "<table class='table table-bordered' id='dataTable' width='100%' cellspacing='0'>";
+    echo "<thead><tr><th>Disciplina</th>";
+    for ($bimestre = 1; $bimestre <= 4; $bimestre++) {
+        echo "<th>{$bimestre}º Bimestre</th>";
     }
+    echo "</tr></thead><tbody>";
+
+    // Exibe as notas e médias para cada disciplina
+    foreach ($disciplinas as $disciplina) {
+        echo "<tr><td>{$disciplina}</td>";
+        for ($bimestre = 1; $bimestre <= 4; $bimestre++) {
+            $nota_bimestre = $notas_e_medias[$disciplina][$bimestre] ?? null;
+            echo "<td>".($nota_bimestre !== null ? number_format($nota_bimestre, 2) : "-")."</td>";
+        }
+        echo "</tr>";
+    }
+
+    echo "</tbody></table></div></div>";
 
 ?>
+</div>
+    
 
-<div class="card-body">
-    <div class="table-responsive">
-        <?php
-        // Cria a tabela de notas do aluno
-        switch ($bimestre) {
-            case 1:
-                echo "<label class='h5 mb-3 text-primary font-weight-bolder'>1º Bimestre</label>";
-                break;
-            case 2:
-                echo "<label class='h5 mb-3 text-primary font-weight-bolder'>2º Bimestre</label>";
-                break;
-            case 3:
-                echo "<label class='h5 mb-3 text-primary font-weight-bolder'>3º Bimestre</label>";
-                break;
-            case 4:
-                echo "<label class='h5 mb-3 text-primary font-weight-bolder'>4º Bimestre</label>";
-                break;
-            default:
-                break;
-        }
-        echo "<table class='table table-bordered' id='dataTable' width='100%' cellspacing='0'>";
-        echo "<thead><tr><th>Disciplina</th><th>Prova 1</th><th>Prova 2</th><th>Trabalho</th><th>Atividade</th><th>Média</th></tr></thead>";
-
-        // Percorre todas as disciplinas da turma e exibe as notas
-        foreach ($disciplinas as $disciplina_info) {
-            $disciplina = $disciplina_info['nome'];
-
-            // Busca as notas do aluno para a disciplina e bimestre atual
-            $sql_notas = "SELECT tipo_id, COALESCE(nota, 0) AS nota
-                          FROM Nota
-                          WHERE aluno_id = $aluno_id AND disciplina_id = {$disciplina_info['id']} AND bim = $bimestre";
-            $result_notas = $conn->query($sql_notas);
-
-            // Inicializa as notas como null
-            $prova1 = null;
-            $prova2 = null;
-            $trabalho = null;
-            $atividade = null;
-
-            // Preenche as notas encontradas na consulta
-            while ($row = $result_notas->fetch_assoc()) {
-                $tipo_id = $row['tipo_id'];
-                $nota = $row['nota'];
-
-                // Armazena a nota no tipo_id correto
-                if ($tipo_id == 1) {
-                    $prova1 = $nota;
-                } elseif ($tipo_id == 2) {
-                    $prova2 = $nota;
-                } elseif ($tipo_id == 3) {
-                    $trabalho = $nota;
-                } elseif ($tipo_id == 4) {
-                    $atividade = $nota;
-                }
-            }
-
-            // Calcula a média aritmética das notas válidas
-            $notas = array_filter([$prova1, $prova2, $trabalho, $atividade], function ($nota) {
-                return $nota !== null;
-            });
-
-            $media = count($notas) > 0 ? array_sum($notas) / count($notas) : null;
-
-            echo "<tbody><tr>";
-            echo "<td>".$disciplina."</td>";
-            echo "<td>".($prova1 !== null ? $prova1 : "-")."</td>";
-            echo "<td>".($prova2 !== null ? $prova2 : "-")."</td>";
-            echo "<td>".($trabalho !== null ? $trabalho : "-")."</td>";
-            echo "<td>".($atividade !== null ? $atividade : "-")."</td>";
-            echo "<td>".($media !== null ? number_format($media, 2) : "-")."</td>";
-            echo "</tr></tbody>";
-        }
-
-        echo "</table>";
-        ?>
-    </div>
-    <?php
-} else {
-    echo"<label class='h6 mb-2 mr-2'>Escolha um bimestre primeiro</label>";
-}?>
 </div>
 
     </div>

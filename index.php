@@ -120,7 +120,7 @@
                         <div class="collapse-divider"></div> -->
                         <h6 class="collapse-header">Boletins</h6>
                         <a class="collapse-item" href="blank.php">Mensal</a>
-                        <a class="collapse-item" href="404.html">Bimestral</a>
+                        <a class="collapse-item" href="404.php">Bimestral</a>
                         
                     </div>
                 </div>
