@@ -275,7 +275,7 @@
                                 <span class="badge badge-danger badge-counter">7</span>
                             </a>
                             <!-- Dropdown - Messages -->
-                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                           <!-- <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="messagesDropdown">
                                 <h6 class="dropdown-header">
                                     Message Center
@@ -330,9 +330,9 @@
                                 </a>
                                 <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
                             </div>
-                        </li>
+                        </li> 
 
-                        <div class="topbar-divider d-none d-sm-block"></div>
+                        <div class="topbar-divider d-none d-sm-block"></div> -->
 
                         <!-- Nav Item - User Information -->
                         <li class="nav-item dropdown no-arrow">
@@ -392,74 +392,93 @@
                                 echo $_SESSION['nome'];
                                 ?></h6>
 <div class="card-body">
-                        </div>
-                        <?php
-                        $aluno_id = $_SESSION['id'];
+                        
+<?php
+$aluno_id = $_SESSION['id'];
+$turma_id = $_SESSION['turma'];
 
-// Verifica se o formulário foi enviado (se o botão "Selecionar" foi pressionado)
+// Consulta para buscar todas as disciplinas da turma selecionada pelo aluno
+$sql_disciplinas = "SELECT id, nome FROM Disciplina WHERE turma_id = $turma_id";
+$result_disciplinas = $conn->query($sql_disciplinas);
 
-    $turma_id = $_SESSION['turma'];
+// Criar um array para armazenar todas as disciplinas da turma
+$disciplinas = array();
+while ($row = $result_disciplinas->fetch_assoc()) {
+    $disciplinas[] = $row;
+}
 
-    // Criar um array para armazenar todas as disciplinas da turma
-    $disciplinas = array();
+// Inicializar o array para armazenar as médias de cada bimestre e a média final de cada disciplina
+$medias_por_disciplina = array();
+foreach ($disciplinas as $disciplina_info) {
+    $disciplina = $disciplina_info['nome'];
+    $medias_por_disciplina[$disciplina] = array(
+        '1' => 0,
+        '2' => 0,
+        '3' => 0,
+        '4' => 0,
+        'media_final' => 0
+    );
+}
 
-    // Criar um array para armazenar as notas e médias de cada disciplina para os bimestres
-    $notas_e_medias = array();
+// Consulta para buscar as médias de cada bimestre para cada disciplina
+for ($b = 1; $b <= 4; $b++) {
+    $sql_medias = "SELECT Disciplina.nome AS disciplina, AVG(COALESCE(Nota.nota, 0)) AS media_bimestre
+                   FROM Disciplina
+                   LEFT JOIN Nota ON Disciplina.id = Nota.disciplina_id AND Nota.aluno_id = $aluno_id AND Nota.bim = $b
+                   WHERE Disciplina.turma_id = $turma_id
+                   GROUP BY disciplina";
 
-    // Loop para calcular as médias para cada bimestre
-    for ($bimestre = 1; $bimestre <= 4; $bimestre++) {
-        // Consulta para buscar as notas do aluno para cada disciplina e bimestre
-        $sql_notas = "SELECT Disciplina.nome AS disciplina, SUM(Nota.nota) AS soma_notas
-                      FROM Nota
-                      RIGHT JOIN Disciplina ON Nota.disciplina_id = Disciplina.id
-                      WHERE Nota.aluno_id = $aluno_id AND Nota.bim = $bimestre AND Disciplina.turma_id = $turma_id
-                      GROUP BY disciplina";
-        $result_notas = $conn->query($sql_notas);
+    $result_medias = $conn->query($sql_medias);
 
-        // Preencher o array de disciplinas caso ainda não esteja preenchido
-        if (empty($disciplinas)) {
-            while ($row = $result_notas->fetch_assoc()) {
-                $disciplinas[] = $row['disciplina'];
-            }
-        }
-
-        // Preencher o array de notas e médias
-        while ($row = $result_notas->fetch_assoc()) {
-            $disciplina = $row['disciplina'];
-            $soma_notas = $row['soma_notas'];
-
-            // Adiciona a soma das notas do bimestre para a disciplina correspondente
-            $notas_e_medias[$disciplina][$bimestre] = $soma_notas;
-        }
+    while ($row = $result_medias->fetch_assoc()) {
+        $disciplina = $row['disciplina'];
+        $media_bimestre = (float) $row['media_bimestre'];
+        $medias_por_disciplina[$disciplina][$b] = $media_bimestre;
     }
+}
 
-    // Exibe os bimestres (1º Bimestre, 2º Bimestre, ..., 4º Bimestre)
-    echo "<div class='card-body'><div class='table-responsive'>";
-    echo "<table class='table table-bordered' id='dataTable' width='100%' cellspacing='0'>";
-    echo "<thead><tr><th>Disciplina</th>";
-    for ($bimestre = 1; $bimestre <= 4; $bimestre++) {
-        echo "<th>{$bimestre}º Bimestre</th>";
-    }
-    echo "</tr></thead><tbody>";
+// Calcular a média final para cada disciplina
+foreach ($medias_por_disciplina as $disciplina => $medias) {
+    $medias = array_filter($medias, function ($media) {
+        return $media !== null;
+    });
 
-    // Exibe as notas e médias para cada disciplina
-    foreach ($disciplinas as $disciplina) {
-        echo "<tr><td>{$disciplina}</td>";
-        for ($bimestre = 1; $bimestre <= 4; $bimestre++) {
-            $nota_bimestre = $notas_e_medias[$disciplina][$bimestre] ?? null;
-            echo "<td>".($nota_bimestre !== null ? number_format($nota_bimestre, 2) : "-")."</td>";
-        }
-        echo "</tr>";
-    }
-
-    echo "</tbody></table></div></div>";
-
+    $media_final = count($medias) > 0 ? array_sum($medias) / count($medias) : null;
+    $medias_por_disciplina[$disciplina]['media_final'] = $media_final;
+}
 ?>
-</div>
-    
 
-</div>
+<div class="card-body">
+    <div class="table-responsive">
+        <?php
+        // Cria a tabela de médias do aluno
+        echo "<table class='table table-bordered' id='dataTable' width='100%' cellspacing='0'>";
+        echo "<thead><tr><th>Disciplina</th><th>1º Bimestre</th><th>2º Bimestre</th><th>3º Bimestre</th><th>4º Bimestre</th><th>Média Final</th></tr></thead>";
+        echo "<tbody>";
 
+        // Percorre todas as disciplinas da turma e exibe as médias
+        foreach ($disciplinas as $disciplina_info) {
+            $disciplina = $disciplina_info['nome'];
+
+            echo "<tr>";
+            echo "<td>" . $disciplina . "</td>";
+
+            // Exibe as médias de cada bimestre
+            for ($b = 1; $b <= 4; $b++) {
+                $media_bimestre = $medias_por_disciplina[$disciplina][$b];
+                echo "<td>" . number_format($media_bimestre, 2) . "</td>";
+            }
+
+            // Exibe a média final
+            $media_final = $medias_por_disciplina[$disciplina]['media_final'];
+            echo "<td>" . number_format($media_final, 2) . "</td>";
+
+            echo "</tr>";
+        }
+
+        echo "</tbody>";
+        echo "</table>";
+        ?>
     </div>
 </div>
 
