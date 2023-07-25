@@ -486,12 +486,12 @@ if (isset($_POST['mostrar'])) {
         while ($row = $result->fetch_assoc()) {
             echo "<tr>";
             echo "<td>" . htmlspecialchars($row['nome']) . "</td>";
-            echo "<td><input type='text' name='prova1[]' class='form-control' value='" . (isset($row['prova1']) ? htmlspecialchars($row['prova1']) : "") . "'></td>";
-            echo "<td><input type='text' name='prova2[]' class='form-control' value='" . (isset($row['prova2']) ? htmlspecialchars($row['prova2']) : "") . "'></td>";
-            echo "<td><input type='text' name='trabalho[]' class='form-control' value='" . (isset($row['trabalho']) ? htmlspecialchars($row['trabalho']) : "") . "'></td>";
-            echo "<td><input type='text' name='atividade[]' class='form-control' value='" . (isset($row['atividade']) ? htmlspecialchars($row['atividade']) : "") . "'></td>";
+            echo "<td><input type='number' name='prova1[]' class='form-control' value='" . (isset($row['prova1']) ? htmlspecialchars($row['prova1']) : "") . "'></td>";
+            echo "<td><input type='number' name='prova2[]' class='form-control' value='" . (isset($row['prova2']) ? htmlspecialchars($row['prova2']) : "") . "'></td>";
+            echo "<td><input type='number' name='trabalho[]' class='form-control' value='" . (isset($row['trabalho']) ? htmlspecialchars($row['trabalho']) : "") . "'></td>";
+            echo "<td><input type='number' name='atividade[]' class='form-control' value='" . (isset($row['atividade']) ? htmlspecialchars($row['atividade']) : "") . "'></td>";
             echo "<input type='hidden' name='aluno_id[]' value='" . $row['id'] . "'>";
-            echo "<input type='hidden' name='disciplina_id[]' value='" . $disciplina_id . "'>";
+            echo "<input type='hidden' name='disciplina_id' value='" . $disciplina_id . "'>";
             echo "<input type='hidden' name='bimestre' value='" . $bimestre . "'>";
             echo "</tr>";
         }
@@ -500,20 +500,21 @@ if (isset($_POST['mostrar'])) {
     echo "</tbody>";
     echo "</table>";
     echo "<input type='submit' class='btn btn-facebook' value='Salvar Notas' name='salvar_notas'>";
+}  echo "</div>";
     echo "</form>";
-}
-
 // Verificar se a conexão foi estabelecida corretamente
 if ($conn->connect_error) {
     die("Falha na conexão: " . $conn->connect_error);
 }
+// ...
 
 if (isset($_POST['salvar_notas'])) {
+    // Verifica se as notas foram enviadas no formato de array
     if (isset($_POST['prova1']) && is_array($_POST['prova1'])) {
-        $alteracaoDetectada = false;
-        $stmtInsert = $conn->prepare("INSERT INTO Nota (aluno_id, disciplina_id, nota, tipo_id, bim) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE nota = VALUES(nota)");
-        $stmtDelete = $conn->prepare("DELETE FROM Nota WHERE aluno_id = ? AND disciplina_id = ? AND tipo_id = ? AND bim = ?");
+        // Inicia uma transação para garantir a consistência dos dados
+        $conn->begin_transaction();
 
+        // Loop para processar as notas
         foreach ($_POST['prova1'] as $key => $prova1) {
             $prova2 = $_POST['prova2'][$key];
             $trabalho = $_POST['trabalho'][$key];
@@ -522,79 +523,59 @@ if (isset($_POST['salvar_notas'])) {
             $disciplina_id = $_POST['disciplina_id'];
             $bimestre = $_POST['bimestre'];
 
-            // Repetir o procedimento para o campo "prova1"
-            if (!empty($prova1)) {
-                $tipo_id = 1;
-                $stmtInsert->bind_param("iidii", $aluno_id, $disciplina_id, $prova1, $tipo_id, $bimestre);
-                $stmtInsert->execute();
-                $alteracaoDetectada = true;
-            } else {
-                $tipo_id = 1;
-                $stmtDelete->bind_param("iiii", $aluno_id, $disciplina_id, $tipo_id, $bimestre);
-                $stmtDelete->execute();
-            }
+            // Verifica se já existe uma nota para o aluno, disciplina e bimestre
+            $sql = "SELECT id FROM Nota WHERE aluno_id = ? AND disciplina_id = ? AND tipo_id = ? AND bim = ?";
+            $stmt = $conn->prepare($sql);
+            $tipo_id = 1; // Para a prova1
+            $bimestreAux = $bimestre; // Variável auxiliar para passar o valor de $bimestre por valor, não por referência
+            $stmt->bind_param("iiii", $aluno_id, $disciplina_id, $tipo_id, $bimestreAux);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-            // Repetir o procedimento para o campo "prova2"
-            if (!empty($prova2)) {
-                $tipo_id = 2;
-                $stmtInsert->bind_param("iidii", $aluno_id, $disciplina_id, $prova2, $tipo_id, $bimestre);
-                $stmtInsert->execute();
-                $alteracaoDetectada = true;
-            } else {
-                $tipo_id = 2;
-                $stmtDelete->bind_param("iiii", $aluno_id, $disciplina_id, $tipo_id, $bimestre);
-                $stmtDelete->execute();
-            }
+            if ($result->num_rows > 0) {
+                // Já existe uma nota para o aluno, disciplina e bimestre, então faz o update
+                $stmtUpdate = $conn->prepare("UPDATE Nota SET nota = ? WHERE aluno_id = ? AND disciplina_id = ? AND tipo_id = ? AND bim = ?");
+                $stmtUpdate->bind_param("diiii", $prova1, $aluno_id, $disciplina_id, $tipo_id, $bimestreAux);
+                $stmtUpdate->execute();
 
-            // Repetir o procedimento para o campo "trabalho"
-            if (!empty($trabalho)) {
-                $tipo_id = 3;
-                $stmtInsert->bind_param("iidii", $aluno_id, $disciplina_id, $trabalho, $tipo_id, $bimestre);
-                $stmtInsert->execute();
-                $alteracaoDetectada = true;
+                // Repetir o procedimento para os outros tipos de notas
+                $tipoNotas = [2 => $prova2, 3 => $trabalho, 4 => $atividade];
+                foreach ($tipoNotas as $tipo_id => $nota) {
+                    $stmtUpdate = $conn->prepare("UPDATE Nota SET nota = ? WHERE aluno_id = ? AND disciplina_id = ? AND tipo_id = ? AND bim = ?");
+                    $stmtUpdate->bind_param("diiii", $nota, $aluno_id, $disciplina_id, $tipo_id, $bimestreAux);
+                    $stmtUpdate->execute();
+                }
             } else {
-                $tipo_id = 3;
-                $stmtDelete->bind_param("iiii", $aluno_id, $disciplina_id, $tipo_id, $bimestre);
-                $stmtDelete->execute();
-            }
+                // Não existe uma nota para o aluno, disciplina e bimestre, então faz a inserção
+                $stmtInsert = $conn->prepare("INSERT INTO Nota (aluno_id, disciplina_id, nota, tipo_id, bim) VALUES (?, ?, ?, ?, ?)");
+                $stmtInsert->bind_param("iiiii", $aluno_id, $disciplina_id, $prova1, $tipo_id, $bimestreAux);
+                $stmtInsert->execute();
 
-            // Repetir o procedimento para o campo "atividade"
-            if (!empty($atividade)) {
-                $tipo_id = 4;
-                $stmtInsert->bind_param("iidii", $aluno_id, $disciplina_id, $atividade, $tipo_id, $bimestre);
-                $stmtInsert->execute();
-                $alteracaoDetectada = true;
-            } else {
-                $tipo_id = 4;
-                $stmtDelete->bind_param("iiii", $aluno_id, $disciplina_id, $tipo_id, $bimestre);
-                $stmtDelete->execute();
+                // Repetir o procedimento para os outros tipos de notas
+                $tipoNotas = [2 => $prova2, 3 => $trabalho, 4 => $atividade];
+                foreach ($tipoNotas as $tipo_id => $nota) {
+                    $stmtInsert = $conn->prepare("INSERT INTO Nota (aluno_id, disciplina_id, nota, tipo_id, bim) VALUES (?, ?, ?, ?, ?)");
+                    $stmtInsert->bind_param("iiiii", $aluno_id, $disciplina_id, $nota, $tipo_id, $bimestreAux);
+                    $stmtInsert->execute();
+                }
             }
         }
 
-        if ($alteracaoDetectada) {
-            echo "Notas salvas com sucesso!";
-        } else {
-            echo "Nenhuma alteração de nota detectada.";
-        }
+        // Commit das operações no banco de dados
+        $conn->commit();
+        echo "Notas salvas com sucesso!";
     } else {
         echo "Nenhum dado de notas foi enviado no formulário.";
     }
 }
 
+// Fechamento da conexão após todas as operações
+$conn->close();
+
 ?>
 
-                </div>
+                
 
-
-
-
-
-
-
-    
-                            
-                            </div>
-                        </div>
                     </div>
 
                 </div>    
