@@ -140,3 +140,10 @@ ALTER TABLE Nota
 ADD COLUMN tipo_id INT NOT NULL;
 ALTER TABLE Nota
 ADD COLUMN bim INT NOT NULL;
+
+INSERT INTO Nota (aluno_id, disciplina_id, nota, tipo_id, bim)
+VALUES (2, 1, 5.2, 1, 1);
+select * 	from nota;
+delete from nota where disciplina_id = 1;
+select * from aluno;
+select * from disciplina
