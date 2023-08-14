@@ -466,7 +466,7 @@ if (isset($_POST['selecionar']) && $_POST['selecionar'] !== 0) {
             return $nota !== null;
         });
 
-        $media = count($notas) > 0 ? array_sum($notas) / count($notas) : null;
+        $media = count($notas) > 0 ? array_sum($notas) / 4 : null;
         $notas_por_disciplina[$disciplina]['media'] = $media;
     }
 

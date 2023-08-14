@@ -443,7 +443,7 @@ foreach ($medias_por_disciplina as $disciplina => $medias) {
         return $media !== null;
     });
 
-    $media_final = count($medias) > 0 ? array_sum($medias) / count($medias) : null;
+    $media_final = count($medias) > 0 ? array_sum($medias) / 4 : null;
     $medias_por_disciplina[$disciplina]['media_final'] = $media_final;
 }
 ?>
