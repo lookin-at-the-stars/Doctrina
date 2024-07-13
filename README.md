@@ -19,6 +19,7 @@ O projeto Doctrina utiliza tecnologias modernas para garantir segurança, usabil
 - **CSS Organizado:** Utilização do SCSS para manter uma estrutura de estilos organizada e escalável.
 - **Backend:** Utilização do PHP para a lógica de negócios e dinamismo da plataforma.
 - **Banco de Dados:** MySQL (ou MariaDB) para armazenamento seguro e eficiente dos dados.
+- **Organização de Equipe:** Utilizamos princípios da métodologia ágil Scrum para mediar os ciclos de trabalho dos integrantes da equipe.
 
 ## Princípios Fundamentais
 
@@ -27,6 +28,14 @@ O **Doctrina** é fundamentado nos princípios de eficiência, colaboração e p
 - **Eficiência:** Simplifica processos educacionais complexos para otimizar o tempo de professores e alunos.
 - **Colaboração:** Facilita a interação entre alunos, professores e administradores por meio de canais de comunicação integrados.
 - **Personalização:** Oferece uma experiência educacional adaptável às necessidades individuais dos alunos e professores.
+
+## Screenshots
+![Screenshot 1](imagensdoc/prototipo.png)
+![Screenshot 2](imagensdoc/unnamed.png)
+![Screenshot 3](imagensdoc/unnamed(2).png)
+![Screenshot 4](imagensdoc/unnamed(3).jpg)
+![Screenshot 5](imagensdoc/unnamed(4).png)
+![Screenshot 6](imagensdoc/unnamed(5).png)
 
 ## Contribuições
 
